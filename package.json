@@ -1,6 +1,7 @@
 {
   "name": "@getmcpads/google-ads-mcp-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "mcpName": "com.getmcpads/google-ads",
   "description": "Open-source MCP server for the Google Ads API. 31 read tools and 7 write tools that preview before they apply, full Keyword Planner, Reach Planner and GAQL access. Self-hosted, bring your own credentials.",
   "license": "Apache-2.0",
   "type": "module",
@@ -39,19 +40,40 @@
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.0.0"
   },
-  "engines": { "node": ">=18.0.0" },
-  "files": ["dist/", "LICENSE", "NOTICE", "README.md"],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
   "keywords": [
-    "mcp", "mcp-server", "model-context-protocol", "google-ads",
-    "google-ads-api", "gaql", "keyword-planner", "advertising",
-    "marketing-analytics", "claude", "chatgpt", "cursor", "ai-agent"
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "google-ads",
+    "google-ads-api",
+    "gaql",
+    "keyword-planner",
+    "advertising",
+    "marketing-analytics",
+    "claude",
+    "chatgpt",
+    "cursor",
+    "ai-agent"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/getmcpads-com/google-ads-mcp-server.git"
   },
-  "homepage": "https://github.com/getmcpads-com/google-ads-mcp-server#readme",
-  "bugs": { "url": "https://github.com/getmcpads-com/google-ads-mcp-server/issues" },
+  "homepage": "https://www.getmcpads.com/tools/google-ads",
+  "bugs": {
+    "url": "https://github.com/getmcpads-com/google-ads-mcp-server/issues"
+  },
   "author": "GetMCPAds (https://www.getmcpads.com)",
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  }
 }

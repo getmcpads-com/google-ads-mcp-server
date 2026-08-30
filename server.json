@@ -1,0 +1,61 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.getmcpads/google-ads",
+  "title": "Google Ads",
+  "description": "Google Ads: 31 read tools with full Keyword Planner, 7 write tools that preview first.",
+  "version": "1.0.1",
+  "websiteUrl": "https://www.getmcpads.com/tools/google-ads",
+  "repository": {
+    "url": "https://github.com/getmcpads-com/google-ads-mcp-server",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@getmcpads/google-ads-mcp-server",
+      "version": "1.0.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GOOGLE_ADS_DEVELOPER_TOKEN",
+          "description": "Google Ads API developer token, Basic Access or above.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "GOOGLE_ADS_CLIENT_ID",
+          "description": "OAuth client ID.",
+          "isRequired": true,
+          "isSecret": false
+        },
+        {
+          "name": "GOOGLE_ADS_CLIENT_SECRET",
+          "description": "OAuth client secret.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "GOOGLE_ADS_REFRESH_TOKEN",
+          "description": "OAuth refresh token.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "GOOGLE_ADS_LOGIN_CUSTOMER_ID",
+          "description": "Manager (MCC) account ID, when the customer sits under one.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "GOOGLE_ADS_ENABLE_WRITES",
+          "description": "Set to 1 to register the 7 write tools.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
