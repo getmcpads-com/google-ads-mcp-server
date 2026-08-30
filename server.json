@@ -3,7 +3,7 @@
   "name": "com.getmcpads/google-ads",
   "title": "Google Ads",
   "description": "Google Ads: 31 read tools with full Keyword Planner, 7 write tools that preview first.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "websiteUrl": "https://www.getmcpads.com/tools/google-ads",
   "repository": {
     "url": "https://github.com/getmcpads-com/google-ads-mcp-server",
@@ -14,7 +14,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@getmcpads/google-ads-mcp-server",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "transport": {
         "type": "stdio"
       },

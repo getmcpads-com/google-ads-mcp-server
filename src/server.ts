@@ -8,7 +8,7 @@ import type { GoogleAdsConfig } from "./config.js";
 import { registerGoogleAds } from "./platforms/google-ads/index.js";
 import { logger } from "./core/logger.js";
 
-export const PACKAGE_VERSION = "1.0.0";
+export const PACKAGE_VERSION = "1.0.2";
 
 export function createServer(config: GoogleAdsConfig): McpServer {
   const server = new McpServer(
