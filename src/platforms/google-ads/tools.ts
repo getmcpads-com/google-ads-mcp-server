@@ -535,7 +535,15 @@ Use google-ads://metrics for available metrics, google-ads://dimensions for dime
           warnings.push("GOOGLE_ADS_LOGIN_CUSTOMER_ID is configured but was not returned by listAccessibleCustomers; verify MCC access if child account queries fail.");
         }
         if (!loginCustomerId && accessibleCustomers.some(customer => customer.manager)) {
-          warnings.push("Manager accounts are accessible but GOOGLE_ADS_LOGIN_CUSTOMER_ID is not set. Set it to the MCC ID when querying managed child accounts.");
+          // This check has no customer in hand, so it cannot show the manager a
+          // real query would announce. Saying "not set" alone reads as a fault,
+          // and readers have gone looking for a variable to fill while queries
+          // were already working.
+          warnings.push(
+            "Manager accounts are accessible and GOOGLE_ADS_LOGIN_CUSTOMER_ID is not set. " +
+            "The server resolves the manager of each account it queries, so this is not a fault on its own. " +
+            "Setting the variable skips that discovery and is worth it when every account sits under the same MCC.",
+          );
         }
 
         return ok({
