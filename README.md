@@ -56,17 +56,17 @@ covers them through `google_ads_run_readonly_rpc` and dedicated tools.
 Google shipped an official Google Ads MCP server in April 2026. It takes the opposite design
 approach, and the comparison is more nuanced than for other platforms.
 
-| | Google's official server | This server | [getmcpads.com](https://www.getmcpads.com) |
+| | **This server** | Google's official server | [getmcpads.com](https://www.getmcpads.com) |
 |---|---|---|---|
-| Tools | **3**: list accounts, GAQL search, resource metadata | **38** (31 read + 7 write) | 38, plus 5 other platforms |
-| Hosting | Self-hosted (pipx) or Cloud Run | **Self-hosted.** stdio, local process | Hosted for you |
-| Requires knowing GAQL | **Yes**, for anything beyond listing accounts | No, catalogues drive the query | No |
-| Keyword Planner | ❌ | ✅ ideas, history, forecasts | ✅ |
-| Reach Planner, audience insights | ❌ | ✅ via read-only RPC | ✅ |
-| Performance Max diagnostics | Via hand-written GAQL | ✅ dedicated tools | ✅ |
-| Writes | ❌ read-only by design | ✅ **preview first**, applied only on `confirm: true` | ✅ preview first |
-| Metric compatibility | None | **Query planner splits incompatible requests** | Same planner |
-| Auditable | Yes, it is open too | **Yes.** Apache-2.0 | This server, audited |
+| Tools | **38** (31 read + 7 write) | 3: list accounts, GAQL search, resource metadata | 38, plus 5 other platforms |
+| Hosting | **Self-hosted.** stdio, local process | Self-hosted (pipx) or Cloud Run | Hosted for you |
+| Requires knowing GAQL | No, catalogues drive the query | **Yes**, for anything beyond listing accounts | No |
+| Keyword Planner | **Yes.** Ideas, history, forecasts, ad group themes | Not available | Yes |
+| Reach Planner, audience insights | **Yes**, through the read-only RPC | Not available | Yes |
+| Performance Max diagnostics | **Yes**, dedicated tools | Through hand-written GAQL | Yes |
+| Writes | **Yes, preview first.** Applied only on `confirm: true` | None, read-only by design | Yes, preview first |
+| Metric compatibility | **Query planner splits incompatible requests** | None | Same planner |
+| Auditable | **Yes.** Apache-2.0 | Yes, it is open too | This server, audited |
 
 **Be fair about it.** Google's server is self-hostable too, so "your data stays on your
 machine" is not a difference here. Its 3 tools are a deliberate minimalist design: one GAQL
