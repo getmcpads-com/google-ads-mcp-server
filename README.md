@@ -123,6 +123,16 @@ to this server so you can revoke it on its own.
 If the accounts you query sit under an MCC, set `GOOGLE_ADS_LOGIN_CUSTOMER_ID` to the manager
 account ID. Dashes are accepted and stripped. Skip it for a standalone account.
 
+You can also leave it unset. Google refuses any request against a managed account unless the
+call names its manager, with a `USER_PERMISSION_DENIED` that mentions neither the account nor
+the manager, so it reads as missing access rather than as a missing header. When the variable
+is unset and the account you query is not directly accessible, the server asks the managers it
+can reach which accounts they hold, and announces the one that holds yours. The answer is
+resolved once and kept for the life of the process.
+
+Setting the variable is still faster: it skips that discovery entirely, and it is the right
+choice when every account you query sits under the same MCC.
+
 Run **`google_ads_health_check`** as your first call. It verifies all four credentials, lists
 the accounts you can actually reach, and reports what is missing, without printing any secret.
 
@@ -182,7 +192,7 @@ npm start
 | `GOOGLE_ADS_CLIENT_ID` | none | **Required.** OAuth client ID |
 | `GOOGLE_ADS_CLIENT_SECRET` | none | **Required.** OAuth client secret |
 | `GOOGLE_ADS_REFRESH_TOKEN` | none | **Required.** From the consent flow |
-| `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | none | Optional. Manager (MCC) account ID |
+| `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | none | Optional. Manager (MCC) account ID. Resolved automatically when unset |
 | `GOOGLE_ADS_ENABLE_WRITES` | *unset* | Set to `1` to register the 7 write tools |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
 

@@ -55,6 +55,33 @@ import { isGoogleAdsReadOnlyServicePath } from "./read-rpc.js";
 
 const DEFAULT_GOOGLE_ADS_REQUEST_TIMEOUT_MS = 30_000;
 
+/**
+ * Add the missing sentence to a permission error, when it is the likely one.
+ *
+ * `USER_PERMISSION_DENIED` on a customer that is managed by an MCC almost
+ * always means the call did not name that MCC, not that access is missing.
+ * Google's message says neither, so the reader goes looking for a permission
+ * that is already granted.
+ *
+ * Only added when no manager was announced. When one was, the cause is
+ * genuinely access, and a hint about a header would send the reader the wrong
+ * way, which is worse than saying nothing.
+ */
+function withManagerHint(message: string, url: string, announcedManager?: string): string {
+  if (announcedManager) return message;
+  if (!/permission|PERMISSION_DENIED/i.test(message)) return message;
+
+  const customer = url.match(/customers\/(\d+)/)?.[1];
+  return (
+    `${message} ` +
+    `This account may sit under a manager (MCC). Google refuses such requests unless the ` +
+    `call names the manager in login-customer-id. Set GOOGLE_ADS_LOGIN_CUSTOMER_ID to the ` +
+    `manager's ID` +
+    (customer ? `, or check with google_ads_get_account_hierarchy which manager holds ${customer}` : "") +
+    `.`
+  );
+}
+
 function googleAdsRequestTimeoutMs(): number {
   const parsed = Number(process.env["GOOGLE_ADS_REQUEST_TIMEOUT_MS"]);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_GOOGLE_ADS_REQUEST_TIMEOUT_MS;
@@ -84,6 +111,14 @@ export class GoogleAdsClient {
   private loginCustomerId?: string;
   private accessToken: string = "";
   private tokenExpiresAt: number = 0;
+  /**
+   * Le gestionnaire résolu pour un compte, ou `undefined` s'il n'en a pas.
+   *
+   * La distinction compte : `undefined` mémorisé veut dire « on a cherché et il
+   * n'y en a pas », ce qui évite de refaire la découverte à chaque appel sur un
+   * compte accessible en direct.
+   */
+  private managerCache = new Map<string, string | undefined>();
   private rateLimiter = new RateLimiter();
   private keywordPlannerRateLimiter = new KeywordPlannerRateLimiter();
 
@@ -152,25 +187,86 @@ export class GoogleAdsClient {
   // PRIVATE METHODS
   // ============================================
 
-  private getHeaders(): Record<string, string> {
+  private getHeaders(loginCustomerId?: string): Record<string, string> {
     const headers: Record<string, string> = {
       Authorization: `Bearer ${this.accessToken}`,
       "developer-token": this.developerToken,
       "Content-Type": "application/json",
     };
 
-    if (this.loginCustomerId) {
-      headers["login-customer-id"] = this.loginCustomerId;
+    // A per-request manager overrides the configured one. Nothing is sent when
+    // neither exists: announcing a manager an account does not have fails just
+    // as hard as omitting one it does.
+    const manager = loginCustomerId ?? this.loginCustomerId;
+    if (manager) {
+      headers["login-customer-id"] = stripCustomerId(manager);
     }
 
     return headers;
+  }
+
+  /**
+   * The manager account to announce when querying a given customer.
+   *
+   * Google rejects any request against an account managed by an MCC unless the
+   * call names that MCC in `login-customer-id`. The rejection is a bare
+   * `USER_PERMISSION_DENIED` that names neither the account nor the manager, so
+   * it reads as missing access rather than as a missing header, and that is
+   * where people lose an afternoon.
+   *
+   * `GOOGLE_ADS_LOGIN_CUSTOMER_ID` solves it when you know the answer in
+   * advance. This resolves it when you do not: if the customer is not directly
+   * accessible, the accessible managers are asked which accounts they hold, and
+   * the one holding this customer is used.
+   *
+   * Resolved once and cached for the life of the client. The hierarchy of an
+   * advertising account does not change between two tool calls, and paying two
+   * extra requests on every query to discover that it has not would be worse
+   * than the problem.
+   */
+  private async resolveLoginCustomerId(customerId: string): Promise<string | undefined> {
+    if (this.loginCustomerId) return this.loginCustomerId;
+
+    const wanted = stripCustomerId(customerId);
+    if (this.managerCache.has(wanted)) return this.managerCache.get(wanted);
+
+    try {
+      const accessible = (await this.listAccessibleCustomers()).map(stripCustomerId);
+      // Directly accessible: it answers for itself, and naming a manager would
+      // break the call rather than fix it.
+      if (accessible.includes(wanted)) {
+        this.managerCache.set(wanted, undefined);
+        return undefined;
+      }
+
+      for (const candidate of accessible) {
+        const children = await this.getClientAccounts(candidate);
+        for (const child of children) {
+          if (stripCustomerId(child.id) === wanted) {
+            this.managerCache.set(wanted, candidate);
+            return candidate;
+          }
+        }
+      }
+    } catch (error) {
+      // Discovery is a convenience, never a precondition. If it fails the query
+      // still runs, and the error it produces is the one worth reporting.
+      logger.debug(
+        "google-ads",
+        `Could not resolve a manager for ${wanted}: ${error instanceof Error ? error.message : error}`,
+      );
+    }
+
+    this.managerCache.set(wanted, undefined);
+    return undefined;
   }
 
   private async request<T>(
     url: string,
     options: RequestInit = {},
     beforeAttempt?: () => Promise<void>,
-    deadlineAtMs?: number
+    deadlineAtMs?: number,
+    loginCustomerId?: string
   ): Promise<T> {
     await this.ensureValidToken();
 
@@ -206,7 +302,7 @@ export class GoogleAdsClient {
           // whatever host the redirect names.
           redirect: "error",
           headers: {
-            ...this.getHeaders(),
+            ...this.getHeaders(loginCustomerId),
             ...options.headers,
           },
         });
@@ -229,7 +325,7 @@ export class GoogleAdsClient {
             || `Request failed: ${response.statusText}`;
 
           throw new GoogleAdsApiException(
-            detailedMessage,
+            withManagerHint(detailedMessage, url, loginCustomerId),
             response.status,
             errorDetails?.status,
             requestId,
@@ -300,13 +396,17 @@ export class GoogleAdsClient {
   async searchStream(customerId: string, gaqlQuery: string): Promise<GoogleAdsRow[]> {
     const cleanCustomerId = stripCustomerId(customerId);
     const url = `${GOOGLE_ADS_API_BASE_URL}/customers/${cleanCustomerId}/googleAds:searchStream`;
+    const manager = await this.resolveLoginCustomerId(cleanCustomerId);
 
     const response = await this.request<Array<{ results?: GoogleAdsRow[]; fieldMask?: string; requestId?: string }>>(
       url,
       {
         method: "POST",
         body: JSON.stringify({ query: gaqlQuery }),
-      }
+      },
+      undefined,
+      undefined,
+      manager
     );
 
     // SearchStream returns an array of batches, each containing results
@@ -331,14 +431,21 @@ export class GoogleAdsClient {
   ): Promise<{ results: GoogleAdsRow[]; nextPageToken?: string; totalResultsCount?: string }> {
     const cleanCustomerId = stripCustomerId(customerId);
     const url = `${GOOGLE_ADS_API_BASE_URL}/customers/${cleanCustomerId}/googleAds:search`;
+    const manager = await this.resolveLoginCustomerId(cleanCustomerId);
 
     const body: Record<string, unknown> = { query: gaqlQuery };
     if (pageToken) body.pageToken = pageToken;
 
-    return this.request(url, {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
+    return this.request(
+      url,
+      {
+        method: "POST",
+        body: JSON.stringify(body),
+      },
+      undefined,
+      undefined,
+      manager
+    );
   }
 
   // ============================================
