@@ -16,10 +16,11 @@ npx -y @getmcpads/google-ads-mcp-server
 
 Also listed in the [MCP Registry](https://registry.modelcontextprotocol.io) as **`com.getmcpads/google-ads`**, so clients that read the registry can install it by name.
 
-> **Prefer not to run it yourself?** [getmcpads.com](https://www.getmcpads.com) is the hosted
-> version of this server, with Google Ads alongside Meta Ads, TikTok Ads, Pinterest Ads, GA4 and
-> Search Console behind a single endpoint, hosted OAuth, and cross-platform reporting.
-> Same tools, same safety model, no setup.
+> **Prefer a hosted connection?** [Get MCP Ads for Google Ads](https://www.getmcpads.com/tools/google-ads?utm_source=github&utm_medium=readme&utm_campaign=google_ads_hosted)
+> handles the server and OAuth flow. Create a workspace, connect the platform and
+> select the accounts or properties your assistant may read. Free is read only;
+> paid limits and supported writes are described on the site. Hosted and npm
+> releases can differ: check the current catalogue for the operation you need.
 
 ---
 
@@ -58,7 +59,7 @@ approach, and the comparison is more nuanced than for other platforms.
 
 | | **This server** | Google's official server | [getmcpads.com](https://www.getmcpads.com) |
 |---|---|---|---|
-| Tools | **38** (31 read + 7 write) | 3: list accounts, GAQL search, resource metadata | 38, plus 5 other platforms |
+| Tools | **38** (31 read + 7 write) | 3: list accounts, GAQL search, resource metadata | [Current hosted catalogue](https://www.getmcpads.com/tools/google-ads) |
 | Hosting | **Self-hosted.** stdio, local process | Self-hosted (pipx) or Cloud Run | Hosted for you |
 | Requires knowing GAQL | No, catalogues drive the query | **Yes**, for anything beyond listing accounts | No |
 | Keyword Planner | **Yes.** Ideas, history, forecasts, ad group themes | Not available | Yes |
@@ -344,14 +345,20 @@ Full policy and reporting instructions: [SECURITY.md](SECURITY.md).
 
 ## Looking for a managed, multi-platform version?
 
-This server does one platform, on your machine, with your credentials. That is on purpose.
+[Try hosted Google Ads](https://www.getmcpads.com/tools/google-ads?utm_source=github&utm_medium=readme&utm_campaign=google_ads_hosted) if you want to use this source without operating a local server.
+Get MCP Ads also connects advertising, Search Console and GA4 through one MCP URL.
+Source availability and plan limits are listed on the site; connecting an account is still required.
 
-If you'd rather not run it yourself, or you need Google Ads **alongside Meta Ads, TikTok Ads,
-Pinterest Ads, GA4 and Search Console** behind one endpoint, with hosted OAuth and
-cross-platform reporting, that's what we build at **[getmcpads.com](https://www.getmcpads.com)**.
+1. Follow the [Google Ads connection guide](https://www.getmcpads.com/guides/sources/google-ads).
+2. Select the account or property your assistant may read.
+3. Connect [Claude](https://www.getmcpads.com/guides/setup/claude),
+   [ChatGPT](https://www.getmcpads.com/guides/setup/chatgpt) or
+   [Codex](https://www.getmcpads.com/guides/setup/codex).
+4. Try a read-only review: “Compare campaign spend and conversions across equal periods. State missing data and do not change anything.”
 
-Same philosophy, less plumbing. This project stays open source and independently useful
-either way.
+See the [current hosted tool catalogue](https://www.getmcpads.com/tools/google-ads)
+and [pricing](https://www.getmcpads.com/pricing) before choosing a paid plan.
+This Apache 2.0 adapter remains independently useful with your own credentials.
 
 ---
 
