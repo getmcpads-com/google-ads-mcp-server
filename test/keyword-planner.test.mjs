@@ -421,7 +421,7 @@ test("Keyword Planner quota is acquired immediately before every concurrent HTTP
 
 test("Keyword Planner quota hook runs again for a retried physical attempt", async () => {
   const originalFetch = globalThis.fetch;
-  const rpcStartedAt = [];
+  let quotaChecks = 0;
   let planningAttempt = 0;
   globalThis.fetch = async (input) => {
     const url = String(input);
@@ -432,8 +432,8 @@ test("Keyword Planner quota hook runs again for a retried physical attempt", asy
         expires_in: 3600,
       }), { status: 200, headers: { "content-type": "application/json" } });
     }
-    rpcStartedAt.push(Date.now());
     planningAttempt += 1;
+    assert.equal(quotaChecks, planningAttempt, "each physical request must acquire quota first");
     if (planningAttempt === 1) {
       return new Response(JSON.stringify({
         error: { message: "Planning quota exhausted", status: "RESOURCE_EXHAUSTED" },
@@ -452,7 +452,10 @@ test("Keyword Planner quota hook runs again for a retried physical attempt", asy
       clientSecret: "client-secret",
       refreshToken: "refresh-token",
     });
-    client.keywordPlannerRateLimiter = new KeywordPlannerRateLimiter(20);
+    client.keywordPlannerRateLimiter = { async acquire(customerId) {
+      assert.equal(customerId, "1234567890");
+      quotaChecks += 1;
+    } };
     // Replace the generic limiter with a deterministic immediate retry so the
     // test checks hook placement without waiting for production backoff.
     client.rateLimiter = {
@@ -466,11 +469,8 @@ test("Keyword Planner quota hook runs again for a retried physical attempt", asy
     };
 
     await client.generateKeywordHistoricalMetrics("1234567890", { keywords: ["retry"] });
-    assert.equal(rpcStartedAt.length, 2);
-    assert.ok(
-      rpcStartedAt[1] - rpcStartedAt[0] >= 18,
-      `retried planning HTTP attempts were only ${rpcStartedAt[1] - rpcStartedAt[0]}ms apart`
-    );
+    assert.equal(planningAttempt, 2);
+    assert.equal(quotaChecks, 2);
   } finally {
     globalThis.fetch = originalFetch;
   }
