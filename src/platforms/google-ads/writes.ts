@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 /** Copyright 2026 GetMCPAds. SPDX-License-Identifier: Apache-2.0 */
 import { z } from "zod";
 import type { ToolShape } from "../../tool-quality.js";
@@ -183,7 +184,7 @@ export function registerGoogleAdsWrites(c: Collector, config: Record<string, str
       const result = await request(`${ADS_BASE}/customers/${cid}/googleAds:mutate`, {
         method: "POST", headers: await headers((loginCustomerId as string | undefined) ?? config.loginCustomerId),
         body: JSON.stringify({ partialFailure: false, validateOnly: a.validateOnly === true, mutateOperations: [
-          { campaignBudgetOperation: { create: { resourceName: budgetName, name: `${name} budget ${crypto.randomUUID()}`, amountMicros: String(micros), deliveryMethod: "STANDARD", explicitlyShared: false } } },
+          { campaignBudgetOperation: { create: { resourceName: budgetName, name: `${name} budget ${randomUUID()}`, amountMicros: String(micros), deliveryMethod: "STANDARD", explicitlyShared: false } } },
           { campaignOperation: { create: campaignData } },
         ] }),
       }, "Google Ads campaign creation") as { mutateOperationResponses?: { campaignBudgetResult?: {resourceName: string}; campaignResult?: {resourceName: string} }[] };
