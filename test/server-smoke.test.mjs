@@ -40,7 +40,7 @@ test("Google Ads MCP exposes core tools and resources over stdio", async () => {
     await client.connect(transport, { timeout: 15000 });
     const tools = await client.listTools(undefined, { timeout: 15000 });
     const toolNames = tools.tools.map((tool) => tool.name);
-    assert.equal(toolNames.length, 31);
+    assert.equal(toolNames.length, 34);
 
     for (const name of [
       "google_ads_list_accounts",
@@ -78,7 +78,7 @@ test("Google Ads MCP exposes core tools and resources over stdio", async () => {
     )?.text;
     assert.ok(manifestText, "manifest resource did not return JSON text");
     const manifest = JSON.parse(manifestText);
-    assert.equal(manifest.tools.length, 31);
+    assert.equal(manifest.tools.length, 34);
     for (const name of [
       "google_ads_generate_keyword_historical_metrics",
       "google_ads_generate_keyword_ideas",

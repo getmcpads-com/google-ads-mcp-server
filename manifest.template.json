@@ -1,0 +1,95 @@
+{
+  "manifest_version": "0.3",
+  "name": "google-ads-mcp-server",
+  "display_name": "Google Ads by Get MCP Ads",
+  "version": "1.1.0",
+  "description": "Google Ads MCP server: 34 read tools, 10 opt-in preview-first writes.",
+  "author": {
+    "name": "GetMCPAds",
+    "url": "https://www.getmcpads.com"
+  },
+  "homepage": "https://www.getmcpads.com/tools/google-ads",
+  "documentation": "https://github.com/getmcpads-com/google-ads-mcp-server#readme",
+  "support": "https://github.com/getmcpads-com/google-ads-mcp-server/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getmcpads-com/google-ads-mcp-server"
+  },
+  "icon": "icon.png",
+  "license": "Apache-2.0",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/cli.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/cli.js"
+      ],
+      "env": {
+        "GOOGLE_ADS_DEVELOPER_TOKEN": "${user_config.google_ads_developer_token}",
+        "GOOGLE_ADS_CLIENT_ID": "${user_config.google_ads_client_id}",
+        "GOOGLE_ADS_CLIENT_SECRET": "${user_config.google_ads_client_secret}",
+        "GOOGLE_ADS_REFRESH_TOKEN": "${user_config.google_ads_refresh_token}",
+        "GOOGLE_ADS_LOGIN_CUSTOMER_ID": "${user_config.google_ads_login_customer_id}",
+        "GOOGLE_ADS_ENABLE_WRITES": "${user_config.google_ads_enable_writes}"
+      }
+    }
+  },
+  "user_config": {
+    "google_ads_developer_token": {
+      "type": "string",
+      "title": "Google Ads Developer Token",
+      "description": "Google Ads API developer token, Basic Access or above.",
+      "required": true,
+      "sensitive": true
+    },
+    "google_ads_client_id": {
+      "type": "string",
+      "title": "Google Ads Client Id",
+      "description": "OAuth client ID.",
+      "required": true,
+      "sensitive": false
+    },
+    "google_ads_client_secret": {
+      "type": "string",
+      "title": "Google Ads Client Secret",
+      "description": "OAuth client secret.",
+      "required": true,
+      "sensitive": true
+    },
+    "google_ads_refresh_token": {
+      "type": "string",
+      "title": "Google Ads Refresh Token",
+      "description": "OAuth refresh token.",
+      "required": true,
+      "sensitive": true
+    },
+    "google_ads_login_customer_id": {
+      "type": "string",
+      "title": "Google Ads Login Customer Id",
+      "description": "Manager (MCC) account ID, when the customer sits under one.",
+      "required": false,
+      "sensitive": false,
+      "default": ""
+    },
+    "google_ads_enable_writes": {
+      "type": "string",
+      "title": "Google Ads Enable Writes",
+      "description": "Set to 1 to expose 10 write tools. Default calls preview; confirm:true applies changes.",
+      "required": false,
+      "sensitive": false,
+      "default": "0"
+    }
+  },
+  "tools_generated": true,
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=18"
+    }
+  }
+}

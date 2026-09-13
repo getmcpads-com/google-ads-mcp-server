@@ -1149,9 +1149,9 @@ const BIDDING_TARGET_DIMENSIONS: GoogleAdsDimensionDefinition[] = [
   {
     key: "campaignStartDate",
     name: "Campaign Start Date",
-    description: "The start date of the campaign in YYYY-MM-DD format.",
+    description: "The start date and time of the campaign in the account time zone (YYYY-MM-DD HH:mm:ss).",
     category: "entity",
-    apiField: "campaign.start_date",
+    apiField: "campaign.start_date_time",
     isSegment: false,
     isResourceAttribute: true,
     compatibleResources: ["campaign"],
@@ -1159,9 +1159,9 @@ const BIDDING_TARGET_DIMENSIONS: GoogleAdsDimensionDefinition[] = [
   {
     key: "campaignEndDate",
     name: "Campaign End Date",
-    description: "The end date of the campaign in YYYY-MM-DD format (if set).",
+    description: "The end date and time of the campaign in the account time zone (YYYY-MM-DD HH:mm:ss), if set.",
     category: "entity",
-    apiField: "campaign.end_date",
+    apiField: "campaign.end_date_time",
     isSegment: false,
     isResourceAttribute: true,
     compatibleResources: ["campaign"],

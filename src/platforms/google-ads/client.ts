@@ -52,6 +52,7 @@ import { calculateMetrics } from "./calculated-metrics.js";
 import { logger } from "../../core/logger.js";
 import { KeywordPlannerRateLimiter, RateLimiter } from "../../core/rate-limiter.js";
 import { isGoogleAdsReadOnlyServicePath } from "./read-rpc.js";
+import { NO_REDIRECT, refuseRedirect } from "../../core/redirects.js";
 
 const DEFAULT_GOOGLE_ADS_REQUEST_TIMEOUT_MS = 30_000;
 
@@ -231,7 +232,7 @@ export class GoogleAdsClient {
     if (this.managerCache.has(wanted)) return this.managerCache.get(wanted);
 
     try {
-      const accessible = (await this.listAccessibleCustomers()).map(stripCustomerId);
+      const accessible = (await this.listAccessibleCustomers()).map(name => stripCustomerId(name.replace(/^customers\//, "")));
       // Directly accessible: it answers for itself, and naming a manager would
       // break the call rather than fix it.
       if (accessible.includes(wanted)) {
@@ -306,6 +307,7 @@ export class GoogleAdsClient {
             ...options.headers,
           },
         });
+        refuseRedirect(response, "Google Ads API");
 
         if (!response.ok) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -637,8 +639,8 @@ export class GoogleAdsClient {
     return {
       id: String(row.customer?.id || cleanCustomerId),
       descriptiveName: row.customer?.descriptiveName || "Unknown Account",
-      currencyCode: row.customer?.currencyCode || "USD",
-      timeZone: row.customer?.timeZone || "America/New_York",
+      currencyCode: row.customer?.currencyCode || "",
+      timeZone: row.customer?.timeZone || "",
       manager: row.customer?.manager || false,
       testAccount: row.customer?.testAccount || false,
       resourceName: row.customer?.resourceName || `customers/${cleanCustomerId}`,

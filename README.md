@@ -28,8 +28,8 @@ Also listed in the [MCP Registry](https://registry.modelcontextprotocol.io) as *
 
 | | |
 |---|---|
-| **31 read tools** | Campaigns, ad groups, budgets, bidding strategies, search terms, landing pages, Performance Max assets and placements, Shopping, recommendations, change history |
-| **7 write tools** | Off by default. Status, budgets, bids, schedules, renames, campaign creation. Each one **previews before it applies** |
+| **34 read tools** | Campaigns, ad groups, budgets, bidding strategies, search terms, landing pages, Performance Max assets and placements, Shopping, recommendations, change history |
+| **10 write tools** | Off by default. Status, budgets, bids, schedules, renames, campaign creation. Each one **previews before it applies** |
 | **Full Keyword Planner** | Keyword ideas, historical metrics, forecasts, ad group themes, geo target suggestions |
 | **130 metrics, 84 dimensions** | With a compatibility matrix that catches invalid combinations before they hit the API |
 | **5 resources** | Live catalogues the model can read: metrics, dimensions, compatibility rules, 11 workflow recipes |
@@ -374,3 +374,26 @@ Please read [SECURITY.md](SECURITY.md) before reporting anything security-relate
 Google, Google Ads and the Google Ads API are trademarks of Google LLC.
 **This project is not affiliated with, endorsed by, or sponsored by Google LLC.**
 It is an independent client of a public API.
+
+## Version 1.1: platform updates and MCP contracts
+
+Every tool now declares read/write annotations, parameter descriptions and a structured output schema. Successful calls retain their original text and expose the same payload as `structuredContent.result`; provider fields depend on the selected report. Errors retain `isError: true`. The generated [server card](server-card.json) contains definitions only, with no account credentials.
+
+Writes remain disabled unless the platform-specific `ENABLE_WRITES` setting is enabled. Read the exact tool schema before calling: operations can require the owning account, currency, native configuration or a matching preview hash. Calls preview by default; applying a change requires `confirm: true`. A provider timeout can leave the outcome unknown: reconcile the account before retrying a creation or upload.
+
+Additional tools included in this release:
+
+| Tool | Purpose |
+| --- | --- |
+| `google_ads_list_image_assets` | List the account's image asset library (FROM asset) with stable, publicly served full-size URLs on tpc.googlesyndication.com, dimensions, file size, and mime type. |
+| `google_ads_list_video_assets` | List the account's YouTube video assets (FROM asset) with derived watch, embed, and public thumbnail URLs. |
+| `google_ads_get_demand_gen_assets` | List Demand Gen ads (video responsive, multi-asset, carousel) with their referenced creatives resolved: stable image URLs and YouTube video IDs with embed and thumbnail URLs. |
+| `google_ads_upload_video` | Upload MP4/WebM/QuickTime bytes (max 16 MiB) to the Google-managed YouTube channel for the selected ad account. |
+| `google_ads_remove_video_upload` | Remove a video upload owned by the selected ad account. |
+| `google_ads_apply_plan` | Preview, validate and atomically apply a Google Ads v25 build/change plan: campaigns, budgets, ad groups, RSA/Display/Demand Gen ads, image/text/YouTube assets, PMax asset groups and links, keywords, geographic/language targeting listing groups and conversion action configuration (no conversion event uploads). |
+
+The hosted GetMCPAds service additionally provides OAuth account selection and interactive review workspaces. Local servers use your own platform credentials and return native report data and media references.
+
+### Desktop bundle
+
+Run `npm run bundle -- /path/to/output` to build a `.mcpb` desktop bundle from the current catalogue. The bundle contains production dependencies, documented local configuration, and complete tool definitions. Provider credentials are entered locally during installation; write tools remain disabled unless explicitly enabled.

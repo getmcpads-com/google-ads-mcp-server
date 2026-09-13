@@ -1,0 +1,4367 @@
+{
+  "serverInfo": {
+    "name": "@getmcpads/google-ads-mcp-server",
+    "title": "Google Ads MCP server: 34 read tools, 10 opt-in preview-first writes.",
+    "version": "1.1.0",
+    "websiteUrl": "https://www.getmcpads.com/tools/google-ads",
+    "icons": [
+      {
+        "src": "https://mcp.getmcpads.com/icon.svg",
+        "mimeType": "image/svg+xml"
+      }
+    ]
+  },
+  "tools": [
+    {
+      "name": "google_ads_list_accounts",
+      "title": "google ads list accounts",
+      "description": "List Google Ads customer accounts accessible with the current credentials. If an accessible customer is a manager account, also attempts to include enabled child accounts from customer_client.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_account_details",
+      "title": "google ads get account details",
+      "description": "Get detailed information for a specific Google Ads customer account.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_run_gaql",
+      "title": "google ads run gaql",
+      "description": "Execute a raw GAQL (Google Ads Query Language) query. Full flexibility for any reporting need.\nExample: SELECT campaign.name, metrics.impressions FROM campaign WHERE campaign.status = 'ENABLED' AND segments.date DURING LAST_30_DAYS ORDER BY metrics.impressions DESC LIMIT 100",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "query": {
+            "type": "string",
+            "minLength": 10,
+            "description": "GAQL query string (SELECT ... FROM ... WHERE ...)"
+          }
+        },
+        "required": [
+          "customerId",
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_insights",
+      "title": "google ads get insights",
+      "description": "Query Google Ads performance insights with intelligent query planning. Auto-generates GAQL, handles metric/segment incompatibilities by splitting queries.\nUse google-ads://metrics for available metrics, google-ads://dimensions for dimensions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "resource": {
+            "type": "string",
+            "default": "campaign",
+            "description": "GAQL FROM clause resource type (campaign, ad_group, ad_group_ad, keyword_view, shopping_performance_view, asset_group, geographic_view, video, search_term_view, landing_page_view, etc.)"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Metric keys (e.g., impressions, clicks, cost_micros, conversions)"
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Dimension keys (e.g., date, campaignName, device)"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date YYYY-MM-DD"
+          },
+          "datePreset": {
+            "type": "string",
+            "enum": [
+              "TODAY",
+              "YESTERDAY",
+              "LAST_7_DAYS",
+              "LAST_14_DAYS",
+              "LAST_30_DAYS",
+              "LAST_90_DAYS",
+              "THIS_MONTH",
+              "LAST_MONTH",
+              "THIS_QUARTER",
+              "LAST_QUARTER"
+            ],
+            "description": "Predefined date range"
+          },
+          "orderBy": {
+            "type": "string",
+            "description": "Optional GAQL field to order by, e.g. metrics.impressions or campaign.name"
+          },
+          "orderDirection": {
+            "type": "string",
+            "enum": [
+              "ASC",
+              "DESC"
+            ],
+            "default": "DESC",
+            "description": "Sort direction for the selected ordering field."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 500,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId",
+          "metrics"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_campaigns",
+      "title": "google ads get campaigns",
+      "description": "List campaigns for a Google Ads account with status, budget, channel type, and bidding strategy.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "statusFilter": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "PAUSED",
+              "REMOVED"
+            ],
+            "description": "Native status values used to filter the returned entities."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 100,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_adgroups",
+      "title": "google ads get adgroups",
+      "description": "List ad groups for a Google Ads account, optionally filtered by campaign.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "campaignId": {
+            "type": "string",
+            "description": "Filter by campaign ID"
+          },
+          "statusFilter": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "PAUSED",
+              "REMOVED"
+            ],
+            "description": "Native status values used to filter the returned entities."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 100,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_keyword_performance",
+      "title": "google ads get keyword performance",
+      "description": "Get keyword-level performance data from keyword_view resource. Shows quality score, impressions, clicks, cost.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date YYYY-MM-DD"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 100,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId",
+          "startDate",
+          "endDate"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_validate_query",
+      "title": "google ads validate query",
+      "description": "Validate metric/dimension/resource compatibility BEFORE executing a query. Checks segment restrictions and resource availability.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Metric keys to validate"
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Dimension keys to validate"
+          },
+          "resource": {
+            "type": "string",
+            "default": "campaign",
+            "description": "Native Google Ads resource from which the GAQL query selects rows."
+          }
+        },
+        "required": [
+          "metrics"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_health_check",
+      "title": "google ads health check",
+      "description": "Read-only connectivity check. Verifies credential presence, Google Ads API access, login customer visibility, API version, and actionable warnings without returning secrets.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_account_hierarchy",
+      "title": "google ads get account hierarchy",
+      "description": "List accessible customers and, where possible, manager/client relationships from GAQL customer_client. Falls back to accessible customers if hierarchy queries are unavailable.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "managerCustomerId": {
+            "type": "string",
+            "description": "MCC Manager account ID (required for sub-accounts managed by an MCC)"
+          },
+          "includeInactive": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include non-ENABLED customer_client links"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_conversion_actions",
+      "title": "google ads get conversion actions",
+      "description": "List conversion actions with status, type, category, primary/include-in-conversions flags, owner customer, and last activity dates when supported.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "statusFilter": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "HIDDEN",
+              "REMOVED"
+            ],
+            "description": "Native status values used to filter the returned entities."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_change_events",
+      "title": "google ads get change events",
+      "description": "Fetch recent change_event rows. Enforces Google Ads constraints: date window within the last 30 days and LIMIT <= 10000.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Start date YYYY-MM-DD. Defaults to 14 days before endDate."
+          },
+          "endDate": {
+            "$ref": "#/properties/startDate",
+            "description": "End date YYYY-MM-DD. Defaults to today."
+          },
+          "resourceType": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$",
+            "description": "Optional ChangeEventResourceType filter, e.g. CAMPAIGN or AD_GROUP_AD"
+          },
+          "operation": {
+            "$ref": "#/properties/resourceType",
+            "description": "Optional ResourceChangeOperation filter, e.g. CREATE, UPDATE, REMOVE"
+          },
+          "userEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Optional user email filter"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_recommendations",
+      "title": "google ads get recommendations",
+      "description": "List Google Ads recommendations with type, resource, campaign/ad group links, dismissed state, and impact when supported.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "typeFilter": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$",
+            "description": "Optional RecommendationType enum filter"
+          },
+          "includeDismissed": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include recommendations already dismissed in the account."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_budgets",
+      "title": "google ads get budgets",
+      "description": "List campaign budgets with amount, status, delivery method, and recommended budget fields when supported.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "statusFilter": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "REMOVED",
+              "UNKNOWN",
+              "UNSPECIFIED"
+            ],
+            "description": "Native status values used to filter the returned entities."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_bidding_strategies",
+      "title": "google ads get bidding strategies",
+      "description": "List portfolio bidding strategies. Includes metrics only when startDate/endDate are provided; otherwise returns structure only.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Optional start date YYYY-MM-DD for metrics"
+          },
+          "endDate": {
+            "$ref": "#/properties/startDate",
+            "description": "Optional end date YYYY-MM-DD for metrics"
+          },
+          "typeFilter": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$",
+            "description": "Optional BiddingStrategyType enum filter"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_search_terms",
+      "title": "google ads get search terms",
+      "description": "Fetch search term performance from search_term_view or campaign_search_term_insight depending on reportType.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "reportType": {
+            "type": "string",
+            "enum": [
+              "search_term_view",
+              "campaign_search_term_insight"
+            ],
+            "default": "search_term_view",
+            "description": "Native provider report type; determines supported metrics and dimensions."
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "End date YYYY-MM-DD"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional campaign ID filter"
+          },
+          "adGroupId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional ad group ID filter. Applies directly to search_term_view and via segments.ad_group for insight reports."
+          },
+          "searchTermContains": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional substring filter for search_term_view"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId",
+          "startDate",
+          "endDate"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_landing_pages",
+      "title": "google ads get landing pages",
+      "description": "Fetch landing_page_view performance with final URL, campaign/ad group context, traffic, conversion, and landing-page quality metrics when supported.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "End date YYYY-MM-DD"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional campaign ID filter"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId",
+          "startDate",
+          "endDate"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_pmax_assets",
+      "title": "google ads get pmax assets",
+      "description": "List Performance Max asset group assets from asset_group_asset with asset group/campaign context and optional date-range performance metrics.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Optional start date YYYY-MM-DD for performance metrics"
+          },
+          "endDate": {
+            "$ref": "#/properties/startDate",
+            "description": "Optional end date YYYY-MM-DD for performance metrics"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "metrics.impressions",
+                "metrics.clicks",
+                "metrics.cost_micros",
+                "metrics.conversions",
+                "metrics.conversions_value",
+                "metrics.all_conversions",
+                "metrics.all_conversions_from_interactions_rate",
+                "metrics.all_conversions_from_interactions_value_per_interaction",
+                "metrics.all_conversions_value",
+                "metrics.all_conversions_value_per_cost",
+                "metrics.average_cost",
+                "metrics.average_cpc",
+                "metrics.average_cpe",
+                "metrics.average_cpm",
+                "metrics.conversions_from_interactions_rate",
+                "metrics.conversions_from_interactions_value_per_interaction",
+                "metrics.conversions_value_per_cost",
+                "metrics.cost_per_all_conversions",
+                "metrics.cost_per_conversion",
+                "metrics.cross_device_conversions",
+                "metrics.cross_device_conversions_value",
+                "metrics.ctr",
+                "metrics.engagement_rate",
+                "metrics.engagements",
+                "metrics.interaction_rate",
+                "metrics.interactions",
+                "metrics.trueview_average_cpv",
+                "metrics.value_per_all_conversions",
+                "metrics.value_per_conversion",
+                "metrics.video_trueview_view_rate",
+                "metrics.video_trueview_views",
+                "metrics.view_through_conversions"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 32,
+            "description": "Additional asset-compatible GAQL metric fields. Used with a date range; delivery metrics are always included. Omit for the default delivery/conversion fields."
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional Performance Max campaign ID filter"
+          },
+          "assetGroupId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional asset group ID filter"
+          },
+          "assetGroupIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/properties/campaignId"
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "Restrict reporting to these asset groups."
+          },
+          "assetId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Restrict reporting to one asset."
+          },
+          "daily": {
+            "type": "boolean",
+            "default": false,
+            "description": "Segment dated performance by segments.date."
+          },
+          "fieldType": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$",
+            "description": "Optional AssetFieldType enum filter, e.g. HEADLINE, LONG_HEADLINE, MARKETING_IMAGE"
+          },
+          "statusFilter": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "PAUSED",
+              "REMOVED"
+            ],
+            "description": "Native status values used to filter the returned entities."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_simulations",
+      "title": "google ads get simulations",
+      "description": "Read-only planning/forecast query for campaign, ad group, or portfolio bidding simulations. Returns simulation metadata and projected point lists when available, with a metadata fallback.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "campaign",
+              "ad_group",
+              "bidding_strategy"
+            ],
+            "default": "campaign",
+            "description": "Simulation resource level to query"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional campaign ID filter. Applies directly to campaign simulations and as campaign context for ad group simulations."
+          },
+          "adGroupId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional ad group ID filter for ad_group simulations"
+          },
+          "biddingStrategyId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional portfolio bidding strategy ID filter for bidding_strategy simulations"
+          },
+          "simulationStartDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Optional minimum simulation start date YYYY-MM-DD"
+          },
+          "simulationEndDate": {
+            "$ref": "#/properties/simulationStartDate",
+            "description": "Optional maximum simulation end date YYYY-MM-DD"
+          },
+          "typeFilter": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$",
+            "description": "Optional SimulationType enum, e.g. BUDGET, TARGET_CPA, TARGET_ROAS, CPC_BID"
+          },
+          "modificationMethod": {
+            "$ref": "#/properties/typeFilter",
+            "description": "Optional SimulationModificationMethod enum, e.g. UNIFORM, SCALING, DEFAULT"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_paid_organic_search_terms",
+      "title": "google ads get paid organic search terms",
+      "description": "Read-only paid/organic search terms report. Uses paid_organic_search_term_view when available and falls back to paid-only search_term_view if organic fields are unavailable.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "End date YYYY-MM-DD"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional campaign ID filter"
+          },
+          "adGroupId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional ad group ID filter"
+          },
+          "searchTermContains": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional search term substring filter"
+          },
+          "serpType": {
+            "type": "string",
+            "enum": [
+              "ADS_AND_ORGANIC",
+              "ADS_ONLY",
+              "ORGANIC_ONLY",
+              "UNKNOWN",
+              "UNSPECIFIED"
+            ],
+            "description": "Optional search engine results page type segment filter"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId",
+          "startDate",
+          "endDate"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_shopping_products",
+      "title": "google ads get shopping products",
+      "description": "Read-only Merchant Center product catalog/eligibility report via shopping_product. Supports account, campaign, and ad group scopes with performance metrics when the account has Shopping/PMax e-commerce data.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "account",
+              "campaign",
+              "ad_group"
+            ],
+            "default": "account",
+            "description": "shopping_product scope. ad_group scope requires campaignId and adGroupId."
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Optional start date YYYY-MM-DD. Used only as a WHERE filter; shopping_product cannot segment by date."
+          },
+          "endDate": {
+            "$ref": "#/properties/startDate",
+            "description": "Optional end date YYYY-MM-DD. Used only as a WHERE filter; shopping_product cannot segment by date."
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Campaign ID for campaign or ad_group scope"
+          },
+          "adGroupId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Ad group ID for ad_group scope"
+          },
+          "merchantCenterId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional Merchant Center ID filter"
+          },
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional Merchant Center item ID filter"
+          },
+          "titleContains": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional product title substring filter"
+          },
+          "feedLabel": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional feed label filter"
+          },
+          "statusFilter": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE",
+              "ELIGIBLE_LIMITED",
+              "NOT_ELIGIBLE",
+              "UNKNOWN",
+              "UNSPECIFIED"
+            ],
+            "description": "Native status values used to filter the returned entities."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_shopping_performance",
+      "title": "google ads get shopping performance",
+      "description": "Read-only Shopping performance report keyed by Merchant Center product dimensions. Useful for joining spend/conversions to merchant ID, item ID, title, brand, feed label, and custom labels.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "End date YYYY-MM-DD"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional campaign ID filter"
+          },
+          "adGroupId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional ad group ID filter"
+          },
+          "merchantCenterId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional Merchant Center ID filter"
+          },
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional Merchant Center item ID filter"
+          },
+          "titleContains": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional product title substring filter"
+          },
+          "brand": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional product brand filter"
+          },
+          "feedLabel": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional product feed label filter"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId",
+          "startDate",
+          "endDate"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_pmax_placements",
+      "title": "google ads get pmax placements",
+      "description": "Read-only Performance Max placement diagnostics from performance_max_placement_view. Returns placement type, display name, target URL, campaign context, and impressions only.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "End date YYYY-MM-DD"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional Performance Max campaign ID filter"
+          },
+          "placementType": {
+            "type": "string",
+            "enum": [
+              "WEBSITE",
+              "MOBILE_APPLICATION",
+              "YOUTUBE_VIDEO",
+              "YOUTUBE_CHANNEL",
+              "GOOGLE_PRODUCTS",
+              "UNKNOWN",
+              "UNSPECIFIED"
+            ],
+            "description": "Optional PlacementType enum filter"
+          },
+          "placementContains": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional substring filter for the placement string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId",
+          "startDate",
+          "endDate"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_pmax_asset_diagnostics",
+      "title": "google ads get pmax asset diagnostics",
+      "description": "Read-only Performance Max asset group diagnostics. Returns ad strength, asset coverage action items, primary status reasons, optional performance metrics, and optional top asset combinations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Optional start date YYYY-MM-DD for asset group metrics/top combinations"
+          },
+          "endDate": {
+            "$ref": "#/properties/startDate",
+            "description": "Optional end date YYYY-MM-DD for asset group metrics/top combinations"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional Performance Max campaign ID filter"
+          },
+          "assetGroupId": {
+            "$ref": "#/properties/campaignId",
+            "description": "Optional asset group ID filter"
+          },
+          "statusFilter": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "PAUSED",
+              "REMOVED"
+            ],
+            "description": "Native status values used to filter the returned entities."
+          },
+          "includeTopCombinations": {
+            "type": "boolean",
+            "default": true,
+            "description": "Also query asset_group_top_combination_view when available"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 1000,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_list_image_assets",
+      "title": "google ads list image assets",
+      "description": "List the account's image asset library (FROM asset) with stable, publicly served full-size URLs on tpc.googlesyndication.com, dimensions, file size, and mime type. This is the whole stock and carries no notion of delivery: an asset uploaded in 2022 and never served appears exactly like one running today. Newest first, so a limit returns recent assets rather than an arbitrary slice, and the count in the response is the account total. For a visual-only gallery of assets with delivery over dates, use the hosted GetMCPAds service (Performance Max coverage). The local server returns media URLs and native report data. Shopping product imagery lives in Merchant Center, not in this library.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "assetIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "description": "Resolve these exact native asset IDs, without scanning the library."
+          },
+          "nameFilter": {
+            "type": "string",
+            "description": "Only assets whose file name contains this text"
+          },
+          "minWidth": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Only images at least this wide, in pixels"
+          },
+          "minHeight": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Only images at least this tall, in pixels"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 500,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_list_video_assets",
+      "title": "google ads list video assets",
+      "description": "List the account's YouTube video assets (FROM asset) with derived watch, embed, and public thumbnail URLs. This is the whole stock and carries no notion of delivery: an asset uploaded years ago and never served appears exactly like one running today. Newest first, so a limit returns recent assets rather than an arbitrary slice, and the count in the response is the account total. For a visual-only gallery of assets with delivery over dates, use the hosted GetMCPAds service (Performance Max coverage). The local server returns media URLs and native report data. Google Ads exposes no downloadable video file: PMax and Demand Gen videos are hosted on YouTube, so display them via embed or thumbnails.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "assetIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "description": "Resolve these exact native asset IDs, without scanning the library."
+          },
+          "nameFilter": {
+            "type": "string",
+            "description": "Only assets whose name contains this text"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 500,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_get_demand_gen_assets",
+      "title": "google ads get demand gen assets",
+      "description": "List Demand Gen ads (video responsive, multi-asset, carousel) with their referenced creatives resolved: stable image URLs and YouTube video IDs with embed and thumbnail URLs. Complements google_ads_get_pmax_assets, which covers Performance Max.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID (without dashes, e.g., 1234567890)"
+          },
+          "campaignId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Optional Demand Gen campaign ID filter"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 500,
+            "description": "Maximum number of returned items or rows. The declared bounds and default apply; use pagination for additional results."
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_generate_keyword_historical_metrics",
+      "title": "google ads generate keyword historical metrics",
+      "description": "Get Keyword Planner search-volume history for supplied keywords. Returns average monthly searches, monthly volumes (up to 48 months), latest volume, computed 3-month and YoY changes, competition, CPC/bid ranges, close variants, and optional device totals. This is a read-only planless RPC.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^\\d[\\d-]*\\d$|^\\d$",
+            "description": "Google Ads serving customer ID; use the client account, not its MCC manager"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "minItems": 1,
+            "maxItems": 10000,
+            "description": "Keywords to analyze; Google may combine near-exact close variants"
+          },
+          "geoTargetIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "maxItems": 10,
+            "default": [],
+            "description": "Geo target criterion IDs, e.g. 2250 for France; empty means all geographies"
+          },
+          "languageId": {
+            "$ref": "#/properties/geoTargetIds/items",
+            "description": "Optional language criterion ID, e.g. 1002 for French; omit for all languages"
+          },
+          "network": {
+            "type": "string",
+            "enum": [
+              "GOOGLE_SEARCH",
+              "GOOGLE_SEARCH_AND_PARTNERS"
+            ],
+            "default": "GOOGLE_SEARCH",
+            "description": "Google Ads search network selector used for planning."
+          },
+          "includeAdultKeywords": {
+            "type": "boolean",
+            "default": false,
+            "description": "Allow adult keyword ideas where supported by the provider and the selected market."
+          },
+          "includeAverageCpc": {
+            "type": "boolean",
+            "default": true,
+            "description": "Request legacy average CPC in addition to top-of-page bid ranges"
+          },
+          "includeDeviceBreakdown": {
+            "type": "boolean",
+            "default": false,
+            "description": "Return aggregate searches by device across all requested keywords"
+          },
+          "includeMonthlySearchVolumes": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include every monthly point in the MCP output. Set false to trim an allowed response; Google's upstream series and the 50,000-point guard are unchanged"
+          },
+          "historyMonths": {
+            "type": "integer",
+            "minimum": 3,
+            "maximum": 48,
+            "default": 24,
+            "description": "History length when no explicit YYYY-MM range is supplied; 24 enables YoY calculation"
+          },
+          "startYearMonth": {
+            "type": "string",
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "description": "Optional inclusive historical range start YYYY-MM"
+          },
+          "endYearMonth": {
+            "$ref": "#/properties/startYearMonth",
+            "description": "Optional inclusive historical range end YYYY-MM"
+          }
+        },
+        "required": [
+          "customerId",
+          "keywords"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_generate_keyword_ideas",
+      "title": "google ads generate keyword ideas",
+      "description": "Discover Keyword Planner ideas from up to 20 seed keywords, a URL, keywords plus URL, or a whole site. Returns historical volume, monthly trends, computed 3-month/YoY changes, competition, bids, close variants, optional concepts, and pagination. Read-only; no plan is saved.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^\\d[\\d-]*\\d$|^\\d$",
+            "description": "Google Ads serving customer ID; use the client account, not its MCC manager"
+          },
+          "seedKeywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "description": "Seed keyword phrases from which Google generates keyword ideas."
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Specific page URL to crawl; combine with seedKeywords if desired"
+          },
+          "site": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Whole-domain seed; exclusive with seedKeywords/url"
+          },
+          "geoTargetIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "maxItems": 10,
+            "default": [],
+            "description": "Google Ads geo-target constant IDs for the intended locations."
+          },
+          "languageId": {
+            "$ref": "#/properties/geoTargetIds/items",
+            "description": "Google Ads language constant ID for the keyword request."
+          },
+          "network": {
+            "type": "string",
+            "enum": [
+              "GOOGLE_SEARCH",
+              "GOOGLE_SEARCH_AND_PARTNERS"
+            ],
+            "default": "GOOGLE_SEARCH",
+            "description": "Google Ads search network selector used for planning."
+          },
+          "includeAdultKeywords": {
+            "type": "boolean",
+            "default": false,
+            "description": "Allow adult keyword ideas where supported by the provider and the selected market."
+          },
+          "includeAverageCpc": {
+            "type": "boolean",
+            "default": true,
+            "description": "Request average cost-per-click metrics when available."
+          },
+          "includeDeviceBreakdown": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include device-specific planning metrics when supported."
+          },
+          "includeKeywordConcepts": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include Google's keyword concept grouping metadata."
+          },
+          "historyMonths": {
+            "type": "integer",
+            "minimum": 3,
+            "maximum": 48,
+            "default": 13,
+            "description": "13 months is enough to compute latest-month YoY while limiting response size"
+          },
+          "startYearMonth": {
+            "type": "string",
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "description": "First year and month of the historical metrics period."
+          },
+          "endYearMonth": {
+            "$ref": "#/properties/startYearMonth",
+            "description": "Last year and month of the historical metrics period."
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 100,
+            "description": "Google supports up to 10,000; keep pages small for interactive MCP use and use larger pages only for controlled exports"
+          },
+          "pageToken": {
+            "type": "string",
+            "description": "nextPageToken from a prior identical request"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_generate_keyword_forecast_metrics",
+      "title": "google ads generate keyword forecast metrics",
+      "description": "Forecast impressions, clicks, CTR, CPC, cost, conversions, and CPA for a temporary keyword campaign. Supports targeting, negatives, match type, three bidding strategies, explicit future dates, and an optional independent per-keyword breakdown. This read-only planless RPC does not create a campaign or saved plan.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^\\d[\\d-]*\\d$|^\\d$",
+            "description": "Google Ads serving customer ID; use a relevant client account for better estimates"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "minItems": 1,
+            "maxItems": 1000,
+            "description": "Keyword phrases to analyze; use the language and market of the intended audience."
+          },
+          "matchType": {
+            "type": "string",
+            "enum": [
+              "EXACT",
+              "PHRASE",
+              "BROAD"
+            ],
+            "default": "BROAD",
+            "description": "Google Ads keyword match type for the forecast."
+          },
+          "negativeKeywords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/properties/keywords/items"
+            },
+            "maxItems": 1000,
+            "default": [],
+            "description": "Keyword phrases excluded from the keyword forecast."
+          },
+          "negativeMatchType": {
+            "$ref": "#/properties/matchType",
+            "default": "BROAD",
+            "description": "Match type applied to the negative keywords."
+          },
+          "geoTargetIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "maxItems": 20,
+            "default": [],
+            "description": "Google Ads geo-target constant IDs for the intended locations."
+          },
+          "languageIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/properties/geoTargetIds/items"
+            },
+            "maxItems": 10,
+            "default": [],
+            "description": "Google Ads language constant IDs for the intended audience."
+          },
+          "network": {
+            "type": "string",
+            "enum": [
+              "GOOGLE_SEARCH",
+              "GOOGLE_SEARCH_AND_PARTNERS"
+            ],
+            "default": "GOOGLE_SEARCH",
+            "description": "Google Ads search network selector used for planning."
+          },
+          "biddingStrategy": {
+            "type": "string",
+            "enum": [
+              "MANUAL_CPC",
+              "MAXIMIZE_CLICKS",
+              "MAXIMIZE_CONVERSIONS"
+            ],
+            "default": "MANUAL_CPC",
+            "description": "Supported bidding strategy for this temporary forecast. The request does not create a live campaign."
+          },
+          "maxCpcBid": {
+            "type": "number",
+            "minimum": 0.000001,
+            "maximum": 1000000000,
+            "description": "Bid in standard account-currency units; required for MANUAL_CPC"
+          },
+          "dailyBudget": {
+            "$ref": "#/properties/maxCpcBid",
+            "description": "Daily amount in standard currency units; required for maximize strategies and optional for MANUAL_CPC"
+          },
+          "maxCpcBidCeiling": {
+            "$ref": "#/properties/maxCpcBid",
+            "description": "Optional standard-currency CPC ceiling for MAXIMIZE_CLICKS"
+          },
+          "conversionRate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Expected conversion rate as a decimal, e.g. 0.02 for 2%"
+          },
+          "currencyCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "Optional ISO 4217 conversion currency; account currency is used by default"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Optional inclusive future forecast start YYYY-MM-DD; supply with endDate"
+          },
+          "endDate": {
+            "$ref": "#/properties/startDate",
+            "description": "Optional inclusive forecast end YYYY-MM-DD, no more than one year ahead; supply with startDate"
+          },
+          "includeKeywordBreakdown": {
+            "type": "boolean",
+            "default": false,
+            "description": "Make independent one-keyword forecast calls in addition to the combined campaign forecast"
+          },
+          "keywordBreakdownLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 10,
+            "description": "Safety cap for additional rate-limited Keyword Planner requests"
+          }
+        },
+        "required": [
+          "customerId",
+          "keywords"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_search_fields",
+      "title": "google ads search fields",
+      "description": "Search Google's live GoogleAdsField catalog. Discovers every queryable GAQL resource, attribute, segment, metric, enum value, and selectable-with compatibility relationship. Read-only and useful before a raw GAQL query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 50000,
+            "description": "Optional raw GoogleAdsField SELECT query. When provided it replaces the structured filters."
+          },
+          "nameContains": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 250,
+            "description": "Case-sensitive field-name substring, e.g. conversion or asset_group"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "RESOURCE",
+              "ATTRIBUTE",
+              "SEGMENT",
+              "METRIC"
+            ],
+            "description": "Category selected from the provider dictionary or field catalogue."
+          },
+          "selectable": {
+            "type": "boolean",
+            "description": "Filter the field catalogue by whether the field can appear in SELECT."
+          },
+          "filterable": {
+            "type": "boolean",
+            "description": "Filter the field catalogue by whether the field can appear in WHERE."
+          },
+          "sortable": {
+            "type": "boolean",
+            "description": "Filter the field catalogue by whether the field can appear in ORDER BY."
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 500,
+            "description": "Maximum items requested per page. Follow the returned pagination information for remaining results."
+          },
+          "pageToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000,
+            "description": "Opaque continuation token returned by the preceding provider response."
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_suggest_geo_targets",
+      "title": "google ads suggest geo targets",
+      "description": "Resolve up to 25 location names or geo target IDs to Google Ads geoTargetConstants. Returns criterion IDs, canonical names, target types, status, parents, locale, and approximate reach. Read-only.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "locationNames": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 250
+            },
+            "minItems": 1,
+            "maxItems": 25,
+            "description": "Human-readable location names for Google to resolve into geo-target constants."
+          },
+          "geoTargetIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "minItems": 1,
+            "maxItems": 25,
+            "description": "Google Ads geo-target constant IDs for the intended locations."
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2,3}(?:[-_][A-Za-z]{2,4})?$",
+            "default": "en",
+            "description": "Locale used for human-readable lookup results."
+          },
+          "countryCode": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$",
+            "description": "Country code used to localize keyword or targeting results."
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_generate_ad_group_themes",
+      "title": "google ads generate ad group themes",
+      "description": "Organize supplied keywords into existing Google Ads ad groups. Returns suggested ad group/campaign pairings, normalized keyword text, and suggested match type without creating or editing keywords. Read-only Keyword Planner RPC.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^\\d[\\d-]*\\d$|^\\d$",
+            "description": "Serving customer ID containing the existing ad groups"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "minItems": 1,
+            "maxItems": 1000,
+            "description": "Keyword phrases to analyze; use the language and market of the intended audience."
+          },
+          "adGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "minItems": 1,
+            "maxItems": 200,
+            "description": "Existing ad group IDs in the same customer account"
+          }
+        },
+        "required": [
+          "customerId",
+          "keywords",
+          "adGroupIds"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_run_readonly_rpc",
+      "title": "google ads run readonly rpc",
+      "description": "Advanced read-only escape hatch for allowlisted Google Ads services outside GAQL: Audience Insights, Reach Planner, benchmarks, creator/trending insights, targeting suggestions, Smart Campaign suggestions, identity verification, invoices, and payments accounts. The operation is an enum; arbitrary paths and all mutations/uploads are impossible.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "generateAudienceCompositionInsights",
+              "generateAudienceDefinition",
+              "generateAudienceOverlapInsights",
+              "generateBenchmarksMetrics",
+              "generateCreatorInsights",
+              "generateReachForecast",
+              "generateShareablePreviews",
+              "generateSuggestedTargetingInsights",
+              "generateTargetingSuggestionMetrics",
+              "generateTrendingInsights",
+              "searchAudienceInsightsAttributes",
+              "suggestBrands",
+              "suggestKeywordThemes",
+              "suggestSmartCampaignAd",
+              "suggestSmartCampaignBudgetOptions",
+              "suggestTravelAssets",
+              "listInsightsEligibleDates",
+              "suggestKeywordThemeConstants",
+              "generateConversionRates",
+              "listBenchmarksAvailableDates",
+              "listBenchmarksLocations",
+              "listBenchmarksProducts",
+              "listBenchmarksSources",
+              "listPlannableLocations",
+              "listPlannableProducts",
+              "listPlannableUserInterests",
+              "listPlannableUserLists",
+              "getIdentityVerification",
+              "listInvoices",
+              "listPaymentsAccounts"
+            ],
+            "description": "Exact allowlisted operation to execute. Arbitrary provider operations are not accepted."
+          },
+          "customerId": {
+            "type": "string",
+            "pattern": "^\\d[\\d-]*\\d$|^\\d$",
+            "description": "Required for customer-scoped operations; omit for global planning catalogs"
+          },
+          "request": {
+            "type": "object",
+            "additionalProperties": {},
+            "default": {},
+            "description": "Official REST JSON request body for POST operations, or query parameters for GET operations"
+          }
+        },
+        "required": [
+          "operation"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_upload_video",
+      "title": "google ads upload video",
+      "description": "Upload MP4/WebM/QuickTime bytes (max 16 MiB) to the Google-managed YouTube channel for the selected ad account. Visibility is UNLISTED: viewable by anyone with the link, not private. Default preview omits bytes and returns planHash; confirm requires expectedPlanHash. This API has no validateOnly. After upload, query you_tube_video_upload.state and video_id with google_ads_run_gaql; only use the video ID after PROCESSED, via google_ads_apply_plan assetOperation.youtubeVideoAsset. No automatic retry after an uncertain upload.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^[\\d-]+$",
+            "description": "Selected Google Ads customer ID, not the manager account."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "Actual account currency as a three-letter ISO code; verified natively before writes."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "pattern": "^[\\d-]+$",
+            "description": "Optional MCC ID; defaults to the selected account's inferred manager."
+          },
+          "testAccountOnly": {
+            "type": "boolean",
+            "description": "Require customer.test_account=true before writing. Always use true for sandbox acceptance."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Apply only when true and expectedPlanHash matches the exact preview."
+          },
+          "expectedPlanHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 planHash from the preview of this exact payload, required for application."
+          },
+          "bytesBase64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 22369624,
+            "description": "Raw base64 video bytes, no data URL. Prefer an existing YouTube asset for large videos."
+          },
+          "mimeType": {
+            "type": "string",
+            "enum": [
+              "video/mp4",
+              "video/webm",
+              "video/quicktime"
+            ],
+            "description": "Actual MIME type of the supplied video bytes."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Nonempty title for this new video upload."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "description": "Nonempty video description; Google rejects an empty value during upload."
+          },
+          "visibility": {
+            "type": "string",
+            "const": "UNLISTED",
+            "description": "Explicit acknowledgment of the visibility of this YouTube upload."
+          }
+        },
+        "required": [
+          "customerId",
+          "currency",
+          "bytesBase64",
+          "mimeType",
+          "title",
+          "description",
+          "visibility"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_remove_video_upload",
+      "title": "google ads remove video upload",
+      "description": "Remove a video upload owned by the selected ad account. Deletes the uploaded YouTube video and can break ads referencing it. Preview and matching expectedPlanHash required. Google v25 marks title/description immutable; this tool does not pretend to edit them.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^[\\d-]+$",
+            "description": "Selected Google Ads customer ID, not the manager account."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "Actual account currency as a three-letter ISO code; verified natively before writes."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "pattern": "^[\\d-]+$",
+            "description": "Optional MCC ID; defaults to the selected account's inferred manager."
+          },
+          "testAccountOnly": {
+            "type": "boolean",
+            "description": "Require customer.test_account=true before writing. Always use true for sandbox acceptance."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Apply only when true and expectedPlanHash matches the exact preview."
+          },
+          "expectedPlanHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 planHash from the preview of this exact payload, required for application."
+          },
+          "uploadId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Numeric ID of a video uploaded through Google Ads in this customer."
+          }
+        },
+        "required": [
+          "customerId",
+          "currency",
+          "uploadId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_apply_plan",
+      "title": "google ads apply plan",
+      "description": "Preview, validate and atomically apply a Google Ads v25 build/change plan: campaigns, budgets, ad groups, RSA/Display/Demand Gen ads, image/text/YouTube assets, PMax asset groups and links, keywords, geographic/language targeting listing groups and conversion action configuration (no conversion event uploads). Native REST camelCase fields; amounts are integer micros of the explicitly stated currency. Supports temporary negative resource IDs for ordered creation in one transaction. No VIDEO campaign creation (Google API restriction), billing, account access changes, customer lists or conversion uploads. New campaigns/groups/ads are always PAUSED. Call first without confirm to inspect the plan and get planHash; validateOnly asks Google without applying; execution requires confirm and the matching expectedPlanHash. Read back results with google_ads_run_gaql. Never retry a creation after an uncertain network result before checking its name/IDs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^[\\d-]+$",
+            "description": "Selected Google Ads customer ID, not the manager account."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "Actual account currency, mandatory even when only linking assets."
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "conversionActionOperation",
+                    "campaignBudgetOperation",
+                    "campaignOperation",
+                    "adGroupOperation",
+                    "adGroupAdOperation",
+                    "adOperation",
+                    "assetOperation",
+                    "assetGroupOperation",
+                    "assetGroupAssetOperation",
+                    "campaignAssetOperation",
+                    "campaignCriterionOperation",
+                    "adGroupCriterionOperation",
+                    "assetGroupListingGroupFilterOperation"
+                  ]
+                },
+                "create": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "update": {
+                  "$ref": "#/properties/operations/items/properties/create"
+                },
+                "remove": {
+                  "type": "string"
+                },
+                "updateMask": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "description": "Ordered operations. kind is a native MutateOperation field; create/update contains native REST fields; remove is the full owned resource name. Images use imageAsset.data base64 bytes; videos use youtubeVideoAsset.youtubeVideoId (already uploaded on YouTube)."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "pattern": "^[\\d-]+$",
+            "description": "Optional MCC ID; defaults to the selected account's inferred manager."
+          },
+          "testAccountOnly": {
+            "type": "boolean",
+            "description": "Require Google's customer.test_account=true before any mutation. Use true for acceptance tests."
+          },
+          "validateOnly": {
+            "type": "boolean",
+            "description": "Ask Google to validate without applying. Takes priority over confirm."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Apply only when true and expectedPlanHash matches the exact preview."
+          },
+          "expectedPlanHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 planHash from the preview of this exact payload, required for application."
+          }
+        },
+        "required": [
+          "customerId",
+          "currency",
+          "operations"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_update_campaign_status",
+      "title": "google ads update campaign status",
+      "description": "Pause, re-enable or remove a Google Ads campaign. Previews by default: without confirm: true, the tool describes the change without applying it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID, with or without dashes."
+          },
+          "campaignId": {
+            "type": "string",
+            "description": "Campaign ID."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PAUSED",
+              "ENABLED",
+              "REMOVED"
+            ],
+            "description": "New status."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "description": "Manager account, if the customer sits under an MCC."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Set to true to actually apply the change. Without it, the tool only previews."
+          }
+        },
+        "required": [
+          "customerId",
+          "campaignId",
+          "status"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_create_campaign",
+      "title": "google ads create campaign",
+      "description": "Create a Google Ads campaign. It is always created PAUSED and there is no option to create it active: someone has to look at it before it spends. Creates the campaign budget too. Previews by default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID, with or without dashes."
+          },
+          "name": {
+            "type": "string",
+            "description": "Campaign name."
+          },
+          "channelType": {
+            "type": "string",
+            "enum": [
+              "SEARCH",
+              "DISPLAY",
+              "SHOPPING",
+              "PERFORMANCE_MAX",
+              "DEMAND_GEN"
+            ],
+            "description": "Advertising channel. Classic VIDEO creation is not supported by Google Ads API; Demand Gen is a distinct, supported video-capable campaign type."
+          },
+          "dailyBudget": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Daily budget in the account currency."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "description": "Manager account ID, when the customer sits under an MCC. Omit otherwise."
+          },
+          "brandGuidelinesEnabled": {
+            "type": "boolean",
+            "const": false,
+            "description": "For Performance Max, explicitly pass false to create an empty paused campaign without campaign-level brand assets. Brand-enabled creation is not supported by this tool."
+          },
+          "euPoliticalAdvertising": {
+            "type": "boolean",
+            "description": "Required for execution: explicitly declare whether this campaign contains EU political advertising."
+          },
+          "merchantId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Merchant Center account ID; required for Shopping."
+          },
+          "feedLabel": {
+            "type": "string",
+            "description": "Merchant Center feed label for Shopping."
+          },
+          "validateOnly": {
+            "type": "boolean",
+            "description": "Validate the atomic request with Google without creating any resources."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Set to true to actually apply the change. Without it, the tool only previews."
+          }
+        },
+        "required": [
+          "customerId",
+          "name",
+          "channelType",
+          "dailyBudget"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_update_campaign_budget",
+      "title": "google ads update campaign budget",
+      "description": "Change the daily budget of a Google Ads campaign. The amount is in the account currency (12.50 for 12.50 EUR). Previews by default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID, with or without dashes."
+          },
+          "budgetId": {
+            "type": "string",
+            "description": "Campaign budget ID (campaign_budget.id)."
+          },
+          "dailyAmount": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "New daily budget, in the account currency."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "description": "Manager account ID, when the customer sits under an MCC. Omit otherwise."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Set to true to actually apply the change. Without it, the tool only previews."
+          }
+        },
+        "required": [
+          "customerId",
+          "budgetId",
+          "dailyAmount"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_rename_campaign",
+      "title": "google ads rename campaign",
+      "description": "Rename a Google Ads campaign. The name is the only thing that changes: delivery, budget and targeting are untouched. Previews by default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID, with or without dashes."
+          },
+          "campaignId": {
+            "type": "string",
+            "description": "Campaign ID."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "New campaign name."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "description": "Manager account ID, when the customer sits under an MCC. Omit otherwise."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Set to true to actually apply the change. Without it, the tool only previews."
+          }
+        },
+        "required": [
+          "customerId",
+          "campaignId",
+          "name"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_update_campaign_schedule",
+      "title": "google ads update campaign schedule",
+      "description": "Change the start or end date of a Google Ads campaign. Dates are YYYY-MM-DD in the account time zone. Previews by default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID, with or without dashes."
+          },
+          "campaignId": {
+            "type": "string",
+            "description": "Campaign ID."
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Start date, YYYY-MM-DD, in the account time zone."
+          },
+          "endDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Use 2037-12-30 to clear the end date (run indefinitely)."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "description": "Manager account ID, when the customer sits under an MCC. Omit otherwise."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Set to true to actually apply the change. Without it, the tool only previews."
+          }
+        },
+        "required": [
+          "customerId",
+          "campaignId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_update_adgroup_status",
+      "title": "google ads update adgroup status",
+      "description": "Pause, re-enable or remove a Google Ads ad group. Previews by default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID, with or without dashes."
+          },
+          "adGroupId": {
+            "type": "string",
+            "description": "Ad group ID."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PAUSED",
+              "ENABLED",
+              "REMOVED"
+            ],
+            "description": "New status."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "description": "Manager account ID, when the customer sits under an MCC. Omit otherwise."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Set to true to actually apply the change. Without it, the tool only previews."
+          }
+        },
+        "required": [
+          "customerId",
+          "adGroupId",
+          "status"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "google_ads_update_adgroup_bid",
+      "title": "google ads update adgroup bid",
+      "description": "Change the default CPC bid of a Google Ads ad group. The amount is in the account currency (1.20 for 1.20 EUR). Has no effect on a campaign using an automated bidding strategy. Previews by default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Google Ads customer ID, with or without dashes."
+          },
+          "adGroupId": {
+            "type": "string",
+            "description": "Ad group ID."
+          },
+          "cpcBid": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "New default CPC bid, in the account currency."
+          },
+          "loginCustomerId": {
+            "type": "string",
+            "description": "Manager account ID, when the customer sits under an MCC. Omit otherwise."
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Set to true to actually apply the change. Without it, the tool only previews."
+          }
+        },
+        "required": [
+          "customerId",
+          "adGroupId",
+          "cpcBid"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original tool result: parsed JSON when the text is JSON, otherwise the text or multiple MCP content blocks. Provider fields depend on the selected query. Existing MCP Apps fields are returned alongside result."
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "google-ads-manifest",
+      "uri": "google-ads://manifest"
+    },
+    {
+      "name": "google-ads-recipes",
+      "uri": "google-ads://recipes"
+    },
+    {
+      "name": "google-ads-metrics",
+      "uri": "google-ads://metrics"
+    },
+    {
+      "name": "google-ads-dimensions",
+      "uri": "google-ads://dimensions"
+    },
+    {
+      "name": "google-ads-compatibility",
+      "uri": "google-ads://compatibility"
+    }
+  ],
+  "prompts": []
+}

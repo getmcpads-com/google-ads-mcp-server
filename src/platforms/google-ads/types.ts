@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 // ============================================
-// GOOGLE ADS API v23 TYPES FOR MCP SERVER
+// GOOGLE ADS API v25 TYPES FOR MCP SERVER
 // Complete TypeScript interfaces for Google Ads integration
 // Type definitions for the Google Ads API surface used by this server
 // ============================================

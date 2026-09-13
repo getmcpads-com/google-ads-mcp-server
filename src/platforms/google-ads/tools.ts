@@ -3,6 +3,7 @@
  * Copyright 2026 GetMCPAds. https://www.getmcpads.com
  * SPDX-License-Identifier: Apache-2.0
  */
+import { PMAX_METRIC_FIELDS } from "./pmax-metrics";
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { GoogleAdsClient } from "./client.js";
@@ -230,6 +231,51 @@ function normalizeChangeEventRange(
     endExclusiveDate: formatIsoDate(addDays(end, 1)),
     warnings,
   };
+}
+
+function recordOf(value: unknown): Record<string, unknown> | undefined {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function arrayOf(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function assetIdFromResourceName(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  return value.match(/\/assets\/(\d+)$/)?.[1];
+}
+
+/**
+ * URLs dérivées d'un asset YouTube : l'API Google Ads n'expose aucun fichier
+ * vidéo (les vidéos PMax/DemandGen vivent sur YouTube et leurs ToS interdisent
+ * le téléchargement); on affiche via embed et vignettes publiques stables.
+ */
+function youtubeDerivedUrls(videoId: unknown): Record<string, string> | undefined {
+  if (typeof videoId !== "string" || !/^[A-Za-z0-9_-]{5,20}$/.test(videoId)) return undefined;
+  return {
+    watch_url: `https://www.youtube.com/watch?v=${videoId}`,
+    embed_url: `https://www.youtube.com/embed/${videoId}`,
+    thumbnail_url: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+    thumbnail_fallback_url: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+  };
+}
+
+/** Collecte récursivement toutes les références customers/X/assets/ID d'un sous-arbre. */
+function collectAssetIds(value: unknown, into: Set<string>): void {
+  const id = assetIdFromResourceName(value);
+  if (id) {
+    into.add(id);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectAssetIds(item, into);
+    return;
+  }
+  const record = recordOf(value);
+  if (record) for (const item of Object.values(record)) collectAssetIds(item, into);
 }
 
 async function runGaqlWithFallback(
@@ -1113,30 +1159,31 @@ Use google-ads://metrics for available metrics, google-ads://dimensions for dime
       customerId: customerIdSchema,
       startDate: isoDateSchema.optional().describe("Optional start date YYYY-MM-DD for performance metrics"),
       endDate: isoDateSchema.optional().describe("Optional end date YYYY-MM-DD for performance metrics"),
+      metrics: z.array(z.enum(PMAX_METRIC_FIELDS)).min(1).max(32).optional().describe("Additional asset-compatible GAQL metric fields. Used with a date range; delivery metrics are always included. Omit for the default delivery/conversion fields."),
       campaignId: numericIdSchema.optional().describe("Optional Performance Max campaign ID filter"),
       assetGroupId: numericIdSchema.optional().describe("Optional asset group ID filter"),
+      assetGroupIds: z.array(numericIdSchema).min(1).max(10).optional().describe("Restrict reporting to these asset groups."),
+      assetId: numericIdSchema.optional().describe("Restrict reporting to one asset."),
+      daily: z.boolean().optional().default(false).describe("Segment dated performance by segments.date."),
       fieldType: gaqlEnumSchema.optional().describe("Optional AssetFieldType enum filter, e.g. HEADLINE, LONG_HEADLINE, MARKETING_IMAGE"),
       statusFilter: z.enum(["ENABLED", "PAUSED", "REMOVED"]).optional(),
       limit: z.number().int().min(1).max(10000).optional().default(1000),
     },
-    async ({ customerId, startDate, endDate, campaignId, assetGroupId, fieldType, statusFilter, limit }) => {
+    async ({ customerId, startDate, endDate, metrics, campaignId, assetGroupId, assetGroupIds, assetId, daily, fieldType, statusFilter, limit }) => {
       try {
         const warnings: string[] = [];
         const where = ["campaign.advertising_channel_type = 'PERFORMANCE_MAX'", ...optionalDateRange(startDate, endDate)];
         if (campaignId) where.push(`campaign.id = ${campaignId}`);
         if (assetGroupId) where.push(`asset_group.id = ${assetGroupId}`);
+        if (assetGroupIds) where.push(`asset_group.id IN (${assetGroupIds.join(",")})`);
+        if (assetId) where.push(`asset.id = ${assetId}`);
+        if (daily && (!startDate || !endDate)) throw new Error("Daily reporting requires both startDate and endDate.");
         if (fieldType) where.push(`asset_group_asset.field_type = '${fieldType}'`);
         if (statusFilter) where.push(`asset_group_asset.status = '${statusFilter}'`);
         if (!startDate && !endDate) warnings.push("No date range provided; performance metrics were omitted and only asset structure was returned.");
 
-        const metricsFields = startDate || endDate
-          ? `,
-            metrics.impressions,
-            metrics.clicks,
-            metrics.cost_micros,
-            metrics.conversions,
-            metrics.conversions_value`
-          : "";
+        const selectedMetrics = [...new Set(["metrics.impressions", "metrics.cost_micros", ...(metrics ?? PMAX_METRIC_FIELDS.slice(0, 5))])];
+        const metricsFields = startDate || endDate ? `, ${selectedMetrics.join(", ")}${daily ? ", segments.date" : ""}` : "";
 
         const richGaql = oneLineGaql(`
           SELECT
@@ -1828,6 +1875,221 @@ Use google-ads://metrics for available metrics, google-ads://dimensions for dime
             topCombinations: topCombinationsGaql,
           },
           warnings: [...warnings, ...assetGroups.warnings],
+        });
+      } catch (e) { return formatMcpToolError(e); }
+    },
+  );
+
+  // ── 25. google_ads_list_image_assets ──────────────────────────────
+  server.tool(
+    "google_ads_list_image_assets",
+    "List the account's image asset library (FROM asset) with stable, publicly served full-size URLs on tpc.googlesyndication.com, dimensions, file size, and mime type. This is the whole stock and carries no notion of delivery: an asset uploaded in 2022 and never served appears exactly like one running today. Newest first, so a limit returns recent assets rather than an arbitrary slice, and the count in the response is the account total. For a visual-only gallery of assets with delivery over dates, use the hosted GetMCPAds service (Performance Max coverage). The local server returns media URLs and native report data. Shopping product imagery lives in Merchant Center, not in this library.",
+    {
+      customerId: customerIdSchema,
+      assetIds: z.array(numericIdSchema).min(1).max(8).optional().describe("Resolve these exact native asset IDs, without scanning the library."),
+      nameFilter: z.string().optional().describe("Only assets whose file name contains this text"),
+      minWidth: z.number().int().min(1).optional().describe("Only images at least this wide, in pixels"),
+      minHeight: z.number().int().min(1).optional().describe("Only images at least this tall, in pixels"),
+      limit: z.number().int().min(1).max(10000).optional().default(500),
+    },
+    async ({ customerId, assetIds, nameFilter, minWidth, minHeight, limit }) => {
+      try {
+        const where = ["asset.type = 'IMAGE'"];
+        if (assetIds?.length) where.push(`asset.id IN (${assetIds.join(",")})`);
+        if (nameFilter) where.push(`asset.name LIKE '%${quoteGaqlString(nameFilter)}%'`);
+        if (minWidth) where.push(`asset.image_asset.full_size.width_pixels >= ${minWidth}`);
+        if (minHeight) where.push(`asset.image_asset.full_size.height_pixels >= ${minHeight}`);
+
+        const { rows, gaql, warnings } = await runGaqlWithFallback(client, customerId, [{
+          label: "image asset library",
+          gaql: oneLineGaql(`
+            SELECT
+              asset.id, asset.name, asset.type, asset.source,
+              asset.image_asset.full_size.url,
+              asset.image_asset.full_size.width_pixels,
+              asset.image_asset.full_size.height_pixels,
+              asset.image_asset.file_size,
+              asset.image_asset.mime_type
+            FROM asset${buildWhere(where)} ORDER BY asset.id DESC LIMIT ${limit}`),
+        }]);
+
+        return ok({
+          imageAssets: rows,
+          count: rows.length,
+          gaql,
+          warnings,
+          limitations: [
+            "This is the account library, not a delivery report: it says nothing about what ran or spent in any period. Rows come newest first, so a limit returns the most recent assets. Use dated delivery reports to identify assets that actually served; the hosted GetMCPAds service provides interactive galleries.",
+            "full_size.url points at tpc.googlesyndication.com/simgad and is publicly served without authentication or visible expiry: safe to display, hotlink, or download while the asset exists.",
+            "Shopping/PLA product visuals come from Merchant Center feeds and never appear in this asset library.",
+          ],
+          nextActions: rows.length >= limit
+            ? ["The LIMIT was reached; narrow with nameFilter or dimensions, or raise limit."]
+            : [],
+        });
+      } catch (e) { return formatMcpToolError(e); }
+    },
+  );
+
+  // ── 26. google_ads_list_video_assets ──────────────────────────────
+  server.tool(
+    "google_ads_list_video_assets",
+    "List the account's YouTube video assets (FROM asset) with derived watch, embed, and public thumbnail URLs. This is the whole stock and carries no notion of delivery: an asset uploaded years ago and never served appears exactly like one running today. Newest first, so a limit returns recent assets rather than an arbitrary slice, and the count in the response is the account total. For a visual-only gallery of assets with delivery over dates, use the hosted GetMCPAds service (Performance Max coverage). The local server returns media URLs and native report data. Google Ads exposes no downloadable video file: PMax and Demand Gen videos are hosted on YouTube, so display them via embed or thumbnails.",
+    {
+      customerId: customerIdSchema,
+      assetIds: z.array(numericIdSchema).min(1).max(8).optional().describe("Resolve these exact native asset IDs, without scanning the library."),
+      nameFilter: z.string().optional().describe("Only assets whose name contains this text"),
+      limit: z.number().int().min(1).max(10000).optional().default(500),
+    },
+    async ({ customerId, assetIds, nameFilter, limit }) => {
+      try {
+        const where = ["asset.type = 'YOUTUBE_VIDEO'"];
+        if (assetIds?.length) where.push(`asset.id IN (${assetIds.join(",")})`);
+        if (nameFilter) where.push(`asset.name LIKE '%${quoteGaqlString(nameFilter)}%'`);
+
+        const { rows, gaql, warnings } = await runGaqlWithFallback(client, customerId, [{
+          label: "video asset library",
+          gaql: oneLineGaql(`
+            SELECT
+              asset.id, asset.name, asset.type, asset.source,
+              asset.youtube_video_asset.youtube_video_id,
+              asset.youtube_video_asset.youtube_video_title
+            FROM asset${buildWhere(where)} ORDER BY asset.id DESC LIMIT ${limit}`),
+        }]);
+
+        const videoAssets = rows.map((row) => {
+          const asset = recordOf(recordOf(row)?.asset);
+          const youtube = recordOf(asset?.youtubeVideoAsset);
+          return { ...row, derivedUrls: youtubeDerivedUrls(youtube?.youtubeVideoId) };
+        });
+
+        return ok({
+          videoAssets,
+          count: videoAssets.length,
+          gaql,
+          warnings,
+          limitations: [
+            "This is the account library, not a delivery report: it says nothing about what ran or spent in any period. Rows come newest first, so a limit returns the most recent assets. Use dated delivery reports to identify assets that actually served; the hosted GetMCPAds service provides interactive galleries.",
+            "No raw video file is available through the Google Ads API and YouTube's terms forbid downloading: use derivedUrls.embed_url (iframe) or watch_url, and the publicly served, stable i.ytimg.com thumbnails (maxresdefault with hqdefault as the always-present fallback).",
+          ],
+          nextActions: videoAssets.length >= limit
+            ? ["The LIMIT was reached; narrow with nameFilter or raise limit."]
+            : [],
+        });
+      } catch (e) { return formatMcpToolError(e); }
+    },
+  );
+
+  // ── 27. google_ads_get_demand_gen_assets ──────────────────────────
+  server.tool(
+    "google_ads_get_demand_gen_assets",
+    "List Demand Gen ads (video responsive, multi-asset, carousel) with their referenced creatives resolved: stable image URLs and YouTube video IDs with embed and thumbnail URLs. Complements google_ads_get_pmax_assets, which covers Performance Max.",
+    {
+      customerId: customerIdSchema,
+      campaignId: numericIdSchema.optional().describe("Optional Demand Gen campaign ID filter"),
+      limit: z.number().int().min(1).max(10000).optional().default(500),
+    },
+    async ({ customerId, campaignId, limit }) => {
+      try {
+        const where = ["campaign.advertising_channel_type = 'DEMAND_GEN'"];
+        if (campaignId) where.push(`campaign.id = ${campaignId}`);
+
+        const demandGenFields = `
+          ad_group_ad.ad.demand_gen_video_responsive_ad.videos,
+          ad_group_ad.ad.demand_gen_video_responsive_ad.logo_images,
+          ad_group_ad.ad.demand_gen_multi_asset_ad.marketing_images,
+          ad_group_ad.ad.demand_gen_multi_asset_ad.square_marketing_images,
+          ad_group_ad.ad.demand_gen_multi_asset_ad.portrait_marketing_images,
+          ad_group_ad.ad.demand_gen_multi_asset_ad.logo_images,
+          ad_group_ad.ad.demand_gen_carousel_ad.carousel_cards`;
+        const baseFields = `
+          campaign.id, campaign.name, ad_group.id, ad_group.name,
+          ad_group_ad.status, ad_group_ad.ad.id, ad_group_ad.ad.name, ad_group_ad.ad.type`;
+
+        const ads = await runGaqlWithFallback(client, customerId, [
+          {
+            label: "demand gen ads with creative references",
+            gaql: oneLineGaql(`SELECT ${baseFields}, ${demandGenFields} FROM ad_group_ad${buildWhere(where)} LIMIT ${limit}`),
+            failureWarning: "Full Demand Gen creative field selection failed; falling back to ad identifiers only",
+          },
+          {
+            label: "demand gen ads without creative fields",
+            gaql: oneLineGaql(`SELECT ${baseFields} FROM ad_group_ad${buildWhere(where)} LIMIT ${limit}`),
+          },
+        ]);
+
+        // Résolution des assets référencés (images stables + IDs YouTube).
+        const referencedIds = new Set<string>();
+        for (const row of ads.rows) {
+          const ad = recordOf(recordOf(recordOf(row)?.adGroupAd)?.ad);
+          if (!ad) continue;
+          collectAssetIds(ad.demandGenVideoResponsiveAd, referencedIds);
+          collectAssetIds(ad.demandGenMultiAssetAd, referencedIds);
+          collectAssetIds(ad.demandGenCarouselAd, referencedIds);
+        }
+
+        const warnings = [...ads.warnings];
+        const assetsById = new Map<string, Record<string, unknown>>();
+        const idList = [...referencedIds];
+        const chunkSize = 500;
+        for (let index = 0; index < idList.length; index += chunkSize) {
+          const chunk = idList.slice(index, index + chunkSize);
+          try {
+            const resolved = await client.searchStream(customerId, oneLineGaql(`
+              SELECT
+                asset.id, asset.name, asset.type,
+                asset.image_asset.full_size.url,
+                asset.image_asset.full_size.width_pixels,
+                asset.image_asset.full_size.height_pixels,
+                asset.youtube_video_asset.youtube_video_id,
+                asset.youtube_video_asset.youtube_video_title
+              FROM asset WHERE asset.id IN (${chunk.join(", ")})`));
+            for (const row of resolved) {
+              const asset = recordOf(recordOf(row)?.asset);
+              const rawId = asset?.id;
+              const id = typeof rawId === "string" || typeof rawId === "number" ? String(rawId) : undefined;
+              if (!asset || !id) continue;
+              const youtube = recordOf(asset.youtubeVideoAsset);
+              assetsById.set(id, {
+                ...asset,
+                derivedUrls: youtubeDerivedUrls(youtube?.youtubeVideoId),
+              });
+            }
+          } catch (error) {
+            warnings.push(`Asset resolution failed for ${chunk.length} referenced assets: ${getErrorMessage(error)}`);
+          }
+        }
+
+        const resolvedAds = ads.rows.map((row) => {
+          const record = recordOf(row) ?? {};
+          const ad = recordOf(recordOf(record.adGroupAd)?.ad);
+          const ids = new Set<string>();
+          if (ad) {
+            collectAssetIds(ad.demandGenVideoResponsiveAd, ids);
+            collectAssetIds(ad.demandGenMultiAssetAd, ids);
+            collectAssetIds(ad.demandGenCarouselAd, ids);
+          }
+          return {
+            ...record,
+            resolvedAssets: [...ids].map((id) => assetsById.get(id) ?? { id, unresolved: true }),
+          };
+        });
+
+        return ok({
+          ads: resolvedAds,
+          count: resolvedAds.length,
+          referencedAssetCount: referencedIds.size,
+          resolvedAssetCount: assetsById.size,
+          gaql: ads.gaql,
+          warnings,
+          limitations: [
+            "Demand Gen videos are YouTube assets: no raw file is available (YouTube terms), display them via resolvedAssets.derivedUrls.embed_url or the stable public i.ytimg.com thumbnails.",
+            "Image full_size.url values on tpc.googlesyndication.com are publicly served with no visible expiry.",
+            "Catalog-driven visuals come from Merchant Center feeds and are not part of ad creative references.",
+          ],
+          nextActions: resolvedAds.length >= limit
+            ? ["The LIMIT was reached; filter by campaignId or raise limit."]
+            : [],
         });
       } catch (e) { return formatMcpToolError(e); }
     },

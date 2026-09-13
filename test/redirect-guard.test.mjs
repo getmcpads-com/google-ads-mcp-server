@@ -48,14 +48,14 @@ test("the only hosts this server can reach are Google's", () => {
     for (const match of text.matchAll(/https:\/\/([a-z0-9.-]+)/gi)) {
       const host = match[1].replace(/\.$/, "");
       // Documentation links in comments and SPDX headers are not call targets.
-      if (host === "github.com" || host === "www.getmcpads.com" ||
+      if (host === "mcp.getmcpads.com" || host === "github.com" || host === "www.getmcpads.com" ||
           host === "modelcontextprotocol.io" || host.endsWith("developers.google.com")) continue;
       hosts.add(host);
     }
   }
   assert.deepEqual(
     [...hosts].sort(),
-    ["googleads.googleapis.com", "oauth2.googleapis.com"],
+    ["googleads.googleapis.com", "i.ytimg.com", "oauth2.googleapis.com", "www.youtube.com"],
     "A new outbound host appeared. That is a deliberate decision, not an accident.",
   );
 });

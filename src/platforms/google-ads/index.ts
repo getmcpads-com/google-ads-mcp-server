@@ -13,10 +13,10 @@ import { logger } from "../../core/logger.js";
 export function registerGoogleAds(server: McpServer, config: GoogleAdsConfig): void {
   registerGoogleAdsTools(server, config);
   registerGoogleAdsResources(server);
-  logger.info("google-ads", "Registered 31 read tools and 5 resources");
+  logger.info("google-ads", "Registered 34 read tools and 5 resources");
 
   if (config.enableWrites) {
-    registerGoogleAdsWrites(server, config);
-    logger.info("google-ads", "Registered 7 write tools (every one previews before it applies)");
+    registerGoogleAdsWrites(server as never, config as never);
+    logger.info("google-ads", "Registered 10 write tools (every one previews before it applies)");
   }
 }

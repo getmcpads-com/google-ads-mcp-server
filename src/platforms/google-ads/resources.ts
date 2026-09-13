@@ -48,6 +48,9 @@ const GOOGLE_ADS_TOOL_MANIFEST = {
     { name: "google_ads_get_insights", purpose: "Generate validated performance GAQL using the metric and dimension catalogs." },
     { name: "google_ads_validate_query", purpose: "Validate metric/dimension/resource compatibility before querying." },
     { name: "google_ads_run_gaql", purpose: "Run raw read-only GAQL SELECT queries for advanced reporting." },
+    { name: "google_ads_list_image_assets", purpose: "List the account's image asset library with stable public full-size URLs, dimensions, and file metadata." },
+    { name: "google_ads_list_video_assets", purpose: "List YouTube video assets with derived watch, embed, and public thumbnail URLs." },
+    { name: "google_ads_get_demand_gen_assets", purpose: "List Demand Gen ads with their referenced image and YouTube creatives resolved." },
   ],
   resources: [
     "google-ads://manifest",
@@ -201,7 +204,7 @@ export function registerGoogleAdsResources(server: McpServer): void {
       mimeType: "application/json",
       text: JSON.stringify({
         description: "Google Ads uses GAQL (SQL-like). The FROM clause determines the resource type. Some metrics are restricted to specific resources, and some segments are incompatible with certain metrics (especially impression_share).",
-        resourceTypes: ["campaign", "ad_group", "ad_group_ad", "keyword_view", "search_term_view", "paid_organic_search_term_view", "shopping_performance_view", "shopping_product", "asset_group", "asset_group_asset", "asset_group_top_combination_view", "performance_max_placement_view", "campaign_simulation", "ad_group_simulation", "bidding_strategy_simulation"],
+        resourceTypes: ["campaign", "ad_group", "ad_group_ad", "keyword_view", "search_term_view", "paid_organic_search_term_view", "shopping_performance_view", "shopping_product", "asset", "asset_group", "asset_group_asset", "asset_group_top_combination_view", "performance_max_placement_view", "campaign_simulation", "ad_group_simulation", "bidding_strategy_simulation"],
         queryFormat: "SELECT ... FROM resource WHERE ... ORDER BY ... LIMIT N",
       }, null, 2),
     }],
