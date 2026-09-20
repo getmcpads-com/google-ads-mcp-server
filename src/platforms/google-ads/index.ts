@@ -5,6 +5,7 @@
  */
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { GoogleAdsConfig } from "../../config.js";
+import { registerGoogleVideoReads } from "./extended-writes.js";
 import { registerGoogleAdsTools } from "./tools.js";
 import { registerGoogleAdsResources } from "./resources.js";
 import { registerGoogleAdsWrites } from "./writes.js";
@@ -12,8 +13,9 @@ import { logger } from "../../core/logger.js";
 
 export function registerGoogleAds(server: McpServer, config: GoogleAdsConfig): void {
   registerGoogleAdsTools(server, config);
+  registerGoogleVideoReads(server as never, config as never);
   registerGoogleAdsResources(server);
-  logger.info("google-ads", "Registered 34 read tools and 5 resources");
+  logger.info("google-ads", "Registered 35 read tools and 5 resources");
 
   if (config.enableWrites) {
     registerGoogleAdsWrites(server as never, config as never);

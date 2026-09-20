@@ -1,8 +1,10 @@
 # google-ads-mcp-server
 
+
+
 [![CI](https://github.com/getmcpads-com/google-ads-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/getmcpads-com/google-ads-mcp-server/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%E2%89%A518-brightgreen.svg)](package.json)
+[![Node](https://img.shields.io/badge/node-%E2%89%A522.12-brightgreen.svg)](package.json)
 
 An open-source [Model Context Protocol](https://modelcontextprotocol.io) server for the
 **Google Ads API**. It lets Claude, ChatGPT, Cursor or any MCP client read and analyse your
@@ -24,11 +26,29 @@ Also listed in the [MCP Registry](https://registry.modelcontextprotocol.io) as *
 
 ---
 
+
+## Current source release
+
+Version 2.0.0 requires **Node.js 22.12 or newer**. CI checks Node 22 and 24.
+This source catalog contains **35 read tools** and **10 write tools**.
+Native API tools are included. Hosted creative galleries, visual editors, Launcher storage and MCP Apps UI are excluded.
+This is a major source update because Node 18 and 20 are no longer supported.
+Source commits, npm releases and MCP Registry publication are separate steps. Until this version is published, use the source installation below to run this exact revision.
+
+```bash
+git clone https://github.com/getmcpads-com/google-ads-mcp-server.git
+cd google-ads-mcp-server
+npm ci
+npm run build
+```
+
+Configure your MCP client to run `node` with the absolute path to `dist/cli.js` and the environment variables documented below.
+
 ## What you get
 
 | | |
 |---|---|
-| **34 read tools** | Campaigns, ad groups, budgets, bidding strategies, search terms, landing pages, Performance Max assets and placements, Shopping, recommendations, change history |
+| **35 read tools** | Campaigns, ad groups, budgets, bidding strategies, search terms, landing pages, Performance Max assets and placements, Shopping, recommendations, change history |
 | **10 write tools** | Off by default. Status, budgets, bids, schedules, renames, campaign creation. Each one **previews before it applies** |
 | **Full Keyword Planner** | Keyword ideas, historical metrics, forecasts, ad group themes, geo target suggestions |
 | **130 metrics, 84 dimensions** | With a compatibility matrix that catches invalid combinations before they hit the API |
@@ -49,41 +69,6 @@ asks for `cost` and `conversions` by name and the server writes the query.
 Keyword ideas, historical volumes and forecasts live in a separate RPC service that GAQL
 cannot reach at all. Same for Reach Planner, audience insights and benchmarks. This server
 covers them through `google_ads_run_readonly_rpc` and dedicated tools.
-
----
-
-## How this compares to Google's own MCP server
-
-Google shipped an official Google Ads MCP server in April 2026. It takes the opposite design
-approach, and the comparison is more nuanced than for other platforms.
-
-| | **This server** | Google's official server | [getmcpads.com](https://www.getmcpads.com) |
-|---|---|---|---|
-| Tools | **38** (31 read + 7 write) | 3: list accounts, GAQL search, resource metadata | [Current hosted catalogue](https://www.getmcpads.com/tools/google-ads) |
-| Hosting | **Self-hosted.** stdio, local process | Self-hosted (pipx) or Cloud Run | Hosted for you |
-| Requires knowing GAQL | No, catalogues drive the query | **Yes**, for anything beyond listing accounts | No |
-| Keyword Planner | **Yes.** Ideas, history, forecasts, ad group themes | Not available | Yes |
-| Reach Planner, audience insights | **Yes**, through the read-only RPC | Not available | Yes |
-| Performance Max diagnostics | **Yes**, dedicated tools | Through hand-written GAQL | Yes |
-| Writes | **Yes, preview first.** Applied only on `confirm: true` | None, read-only by design | Yes, preview first |
-| Metric compatibility | **Query planner splits incompatible requests** | None | Same planner |
-| Auditable | **Yes.** Apache-2.0 | Yes, it is open too | This server, audited |
-
-**Be fair about it.** Google's server is self-hostable too, so "your data stays on your
-machine" is not a difference here. Its 3 tools are a deliberate minimalist design: one GAQL
-tool can express most of the reporting surface, and a model fluent in GAQL will do a lot with
-very little.
-
-The difference is where the knowledge lives. There, it lives in the model, which has to write
-correct GAQL against a schema of thousands of fields. Here, it lives in the server, in
-catalogues and a compatibility matrix. Add to that the planning services GAQL cannot reach at
-all, and writes that cannot fire on the first call.
-
-**Choose Google's** if your model writes good GAQL and you only need reporting.
-**Choose this one** if you want named metrics instead of query language, Keyword Planner and
-Reach Planner access, or guarded writes.
-**Choose [getmcpads.com](https://www.getmcpads.com)** if you want this server's capabilities
-without running it, or you need more than one ad platform in the same conversation.
 
 ---
 
@@ -397,3 +382,9 @@ The hosted GetMCPAds service additionally provides OAuth account selection and i
 ### Desktop bundle
 
 Run `npm run bundle -- /path/to/output` to build a `.mcpb` desktop bundle from the current catalogue. The bundle contains production dependencies, documented local configuration, and complete tool definitions. Provider credentials are entered locally during installation; write tools remain disabled unless explicitly enabled.
+
+## Additional native tools
+
+| Tool | Purpose |
+|---|---|
+| `google_ads_get_video_upload` | Read the processing state and YouTube video ID of one Google Ads upload in the selected customer. |

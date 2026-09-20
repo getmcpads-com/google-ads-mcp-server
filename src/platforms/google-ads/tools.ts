@@ -1886,15 +1886,17 @@ Use google-ads://metrics for available metrics, google-ads://dimensions for dime
     "List the account's image asset library (FROM asset) with stable, publicly served full-size URLs on tpc.googlesyndication.com, dimensions, file size, and mime type. This is the whole stock and carries no notion of delivery: an asset uploaded in 2022 and never served appears exactly like one running today. Newest first, so a limit returns recent assets rather than an arbitrary slice, and the count in the response is the account total. For a visual-only gallery of assets with delivery over dates, use the hosted GetMCPAds service (Performance Max coverage). The local server returns media URLs and native report data. Shopping product imagery lives in Merchant Center, not in this library.",
     {
       customerId: customerIdSchema,
+      beforeAssetId: numericIdSchema.optional().describe("Continue the descending library before this last-seen asset ID. Use the same filters."),
       assetIds: z.array(numericIdSchema).min(1).max(8).optional().describe("Resolve these exact native asset IDs, without scanning the library."),
       nameFilter: z.string().optional().describe("Only assets whose file name contains this text"),
       minWidth: z.number().int().min(1).optional().describe("Only images at least this wide, in pixels"),
       minHeight: z.number().int().min(1).optional().describe("Only images at least this tall, in pixels"),
       limit: z.number().int().min(1).max(10000).optional().default(500),
     },
-    async ({ customerId, assetIds, nameFilter, minWidth, minHeight, limit }) => {
+    async ({ customerId, beforeAssetId, assetIds, nameFilter, minWidth, minHeight, limit }) => {
       try {
         const where = ["asset.type = 'IMAGE'"];
+        if (beforeAssetId) where.push(`asset.id < ${beforeAssetId}`);
         if (assetIds?.length) where.push(`asset.id IN (${assetIds.join(",")})`);
         if (nameFilter) where.push(`asset.name LIKE '%${quoteGaqlString(nameFilter)}%'`);
         if (minWidth) where.push(`asset.image_asset.full_size.width_pixels >= ${minWidth}`);
@@ -1937,13 +1939,15 @@ Use google-ads://metrics for available metrics, google-ads://dimensions for dime
     "List the account's YouTube video assets (FROM asset) with derived watch, embed, and public thumbnail URLs. This is the whole stock and carries no notion of delivery: an asset uploaded years ago and never served appears exactly like one running today. Newest first, so a limit returns recent assets rather than an arbitrary slice, and the count in the response is the account total. For a visual-only gallery of assets with delivery over dates, use the hosted GetMCPAds service (Performance Max coverage). The local server returns media URLs and native report data. Google Ads exposes no downloadable video file: PMax and Demand Gen videos are hosted on YouTube, so display them via embed or thumbnails.",
     {
       customerId: customerIdSchema,
+      beforeAssetId: numericIdSchema.optional().describe("Continue the descending library before this last-seen asset ID. Use the same filters."),
       assetIds: z.array(numericIdSchema).min(1).max(8).optional().describe("Resolve these exact native asset IDs, without scanning the library."),
       nameFilter: z.string().optional().describe("Only assets whose name contains this text"),
       limit: z.number().int().min(1).max(10000).optional().default(500),
     },
-    async ({ customerId, assetIds, nameFilter, limit }) => {
+    async ({ customerId, beforeAssetId, assetIds, nameFilter, limit }) => {
       try {
         const where = ["asset.type = 'YOUTUBE_VIDEO'"];
+        if (beforeAssetId) where.push(`asset.id < ${beforeAssetId}`);
         if (assetIds?.length) where.push(`asset.id IN (${assetIds.join(",")})`);
         if (nameFilter) where.push(`asset.name LIKE '%${quoteGaqlString(nameFilter)}%'`);
 
