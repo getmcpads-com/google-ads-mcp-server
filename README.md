@@ -1,48 +1,60 @@
-# google-ads-mcp-server
+<div align="center">
 
+# Google Ads MCP server
 
+### Turn Google Ads questions into useful answers.
 
+Explore performance, research keywords and prepare campaign changes from your MCP client.
+
+[![Release](https://img.shields.io/github/v/release/getmcpads-com/google-ads-mcp-server?color=2448e5)](https://github.com/getmcpads-com/google-ads-mcp-server/releases/latest)
 [![CI](https://github.com/getmcpads-com/google-ads-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/getmcpads-com/google-ads-mcp-server/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522.12-brightgreen.svg)](package.json)
 
-An open-source [Model Context Protocol](https://modelcontextprotocol.io) server for the
-**Google Ads API**. It lets Claude, ChatGPT, Cursor or any MCP client read and analyse your
-Google Ads data, plan keywords, and change campaigns if you choose to.
+[Watch the demo](https://www.getmcpads.com/home/film/get-mcp-ads-film-1080p.mp4) · [What's new](#whats-new) · [Install](#install-this-release) · [Tool reference](#tools) · [Try hosted getmcpads](https://www.getmcpads.com/tools/google-ads?utm_source=github&utm_medium=readme&utm_campaign=google-ads)
 
-You run it. Your credentials stay on your machine. Nothing is proxied through a third party.
+[![Watch the getmcpads product demo: campaign review in Claude](https://www.getmcpads.com/home/film/poster-rich.webp)](https://www.getmcpads.com/home/film/get-mcp-ads-film-1080p.mp4)
+
+**[Play the 27-second product film](https://www.getmcpads.com/home/film/get-mcp-ads-film-1080p.mp4)**
+
+</div>
+
+The film demonstrates hosted getmcpads with staged data. Its creative galleries and MCP Apps interface belong to the hosted product. This repository provides the standalone native API tools.
+
+**35 read tools** · **10 write tools**, disabled by default.
+
+Run locally with your own platform credentials and a client that supports stdio MCP, such as Claude Desktop, Claude Code or Cursor. Your requests go directly to the platform. For managed connections, including supported ChatGPT setups, use the hosted option.
+
+## What's new
+
+**[v2.0.0: Native tools and security update](https://github.com/getmcpads-com/google-ads-mcp-server/releases/tag/v2.0.0) · September 20, 2026**
+
+- Add descending image/video asset pagination.
+- Add account-scoped upload processing reads and return the native upload ID.
+- Retain API v25, standalone MCC discovery and credential redirect protection.
+- Require Node.js 22.12 or newer and check Node 22/24 in CI.
+- Update vulnerable dependencies and regenerate the MCP catalog.
+
+[Full changelog](CHANGELOG.md) · [Source synchronization details](SOURCE_SYNC.md) · [All releases](https://github.com/getmcpads-com/google-ads-mcp-server/releases)
+
+### Upgrade notes
+
+Requires **Node.js 22.12 or newer**. CI covers Node 22 and 24. Version 2.0.0 drops Node 18 and 20 support. Read the current tool schemas before reusing saved arguments. Writes remain optional and require explicit confirmation. Hosted creative integrations and MCP Apps UI are outside this release.
+
+## Install this release
+
+This is a GitHub source release. npm and MCP Registry versions are published separately. The commands below select this exact version; unpinned `npx` examples later in this document select the version currently available on npm.
 
 ```bash
-npx -y @getmcpads/google-ads-mcp-server
-```
-
-Also listed in the [MCP Registry](https://registry.modelcontextprotocol.io) as **`com.getmcpads/google-ads`**, so clients that read the registry can install it by name.
-
-> **Prefer a hosted connection?** [Get MCP Ads for Google Ads](https://www.getmcpads.com/tools/google-ads?utm_source=github&utm_medium=readme&utm_campaign=google_ads_hosted)
-> handles the server and OAuth flow. Create a workspace, connect the platform and
-> select the accounts or properties your assistant may read. Free is read only;
-> paid limits and supported writes are described on the site. Hosted and npm
-> releases can differ: check the current catalogue for the operation you need.
-
----
-
-
-## Current source release
-
-Version 2.0.0 requires **Node.js 22.12 or newer**. CI checks Node 22 and 24.
-This source catalog contains **35 read tools** and **10 write tools**.
-Native API tools are included. Hosted creative galleries, visual editors, Launcher storage and MCP Apps UI are excluded.
-This is a major source update because Node 18 and 20 are no longer supported.
-Source commits, npm releases and MCP Registry publication are separate steps. Until this version is published, use the source installation below to run this exact revision.
-
-```bash
-git clone https://github.com/getmcpads-com/google-ads-mcp-server.git
+git clone --branch v2.0.0 --depth 1 https://github.com/getmcpads-com/google-ads-mcp-server.git
 cd google-ads-mcp-server
 npm ci
 npm run build
 ```
 
-Configure your MCP client to run `node` with the absolute path to `dist/cli.js` and the environment variables documented below.
+Configure your MCP client to run `node` with the absolute path to `dist/cli.js` and the platform credentials documented below.
+
+> **Prefer a managed connection?** [Use Google Ads with hosted getmcpads](https://www.getmcpads.com/tools/google-ads?utm_source=github&utm_medium=readme&utm_campaign=google-ads). Connect your account, select the data your assistant may access and use the hosted MCP connection. See the site for current features and plans.
 
 ## What you get
 
@@ -179,7 +191,7 @@ npm start
 | `GOOGLE_ADS_CLIENT_SECRET` | none | **Required.** OAuth client secret |
 | `GOOGLE_ADS_REFRESH_TOKEN` | none | **Required.** From the consent flow |
 | `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | none | Optional. Manager (MCC) account ID. Resolved automatically when unset |
-| `GOOGLE_ADS_ENABLE_WRITES` | *unset* | Set to `1` to register the 7 write tools |
+| `GOOGLE_ADS_ENABLE_WRITES` | *unset* | Set to `1` to register the 10 write tools |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
 
 Check your setup at any time:
@@ -236,61 +248,68 @@ Two further guardrails:
 
 ## Tools
 
+Every tool is listed below. See [server-card.json](server-card.json) for complete parameter and output schemas.
+
 <details>
-<summary><b>31 read tools</b></summary>
+<summary><b>35 read tools</b></summary>
 
-### Discovery and health
 | Tool | Purpose |
-|---|---|
-| `google_ads_health_check` | Validates all four credentials and lists reachable accounts |
-| `google_ads_list_accounts` | Every account the credentials can reach |
-| `google_ads_get_account_details` | Currency, timezone, status, account settings |
-| `google_ads_get_account_hierarchy` | The MCC tree above and below an account |
+| --- | --- |
+| `google_ads_list_accounts` | List Google Ads customer accounts accessible with the current credentials. |
+| `google_ads_get_account_details` | Get detailed information for a specific Google Ads customer account. |
+| `google_ads_run_gaql` | Execute a raw GAQL (Google Ads Query Language) query. |
+| `google_ads_get_insights` | Query Google Ads performance insights with intelligent query planning. |
+| `google_ads_get_campaigns` | List campaigns for a Google Ads account with status, budget, channel type, and bidding strategy. |
+| `google_ads_get_adgroups` | List ad groups for a Google Ads account, optionally filtered by campaign. |
+| `google_ads_get_keyword_performance` | Get keyword-level performance data from keyword_view resource. |
+| `google_ads_validate_query` | Validate metric/dimension/resource compatibility BEFORE executing a query. |
+| `google_ads_health_check` | Read-only connectivity check. |
+| `google_ads_get_account_hierarchy` | List accessible customers and, where possible, manager/client relationships from GAQL customer_client. |
+| `google_ads_get_conversion_actions` | List conversion actions with status, type, category, primary/include-in-conversions flags, owner customer, and last activity dates when supported. |
+| `google_ads_get_change_events` | Fetch recent change_event rows. |
+| `google_ads_get_recommendations` | List Google Ads recommendations with type, resource, campaign/ad group links, dismissed state, and impact when supported. |
+| `google_ads_get_budgets` | List campaign budgets with amount, status, delivery method, and recommended budget fields when supported. |
+| `google_ads_get_bidding_strategies` | List portfolio bidding strategies. |
+| `google_ads_get_search_terms` | Fetch search term performance from search_term_view or campaign_search_term_insight depending on reportType. |
+| `google_ads_get_landing_pages` | Fetch landing_page_view performance with final URL, campaign/ad group context, traffic, conversion, and landing-page quality metrics when supported. |
+| `google_ads_get_pmax_assets` | List Performance Max asset group assets from asset_group_asset with asset group/campaign context and optional date-range performance metrics. |
+| `google_ads_get_simulations` | Read-only planning/forecast query for campaign, ad group, or portfolio bidding simulations. |
+| `google_ads_get_paid_organic_search_terms` | Read-only paid/organic search terms report. |
+| `google_ads_get_shopping_products` | Read-only Merchant Center product catalog/eligibility report via shopping_product. |
+| `google_ads_get_shopping_performance` | Read-only Shopping performance report keyed by Merchant Center product dimensions. |
+| `google_ads_get_pmax_placements` | Read-only Performance Max placement diagnostics from performance_max_placement_view. |
+| `google_ads_get_pmax_asset_diagnostics` | Read-only Performance Max asset group diagnostics. |
+| `google_ads_list_image_assets` | List the account's image asset library (FROM asset) with stable, publicly served full-size URLs on tpc.googlesyndication.com, dimensions, file size, and mime type. |
+| `google_ads_list_video_assets` | List the account's YouTube video assets (FROM asset) with derived watch, embed, and public thumbnail URLs. |
+| `google_ads_get_demand_gen_assets` | List Demand Gen ads (video responsive, multi-asset, carousel) with their referenced creatives resolved: stable image URLs and YouTube video IDs with embed and thumbnail URLs. |
+| `google_ads_generate_keyword_historical_metrics` | Get Keyword Planner search-volume history for supplied keywords. |
+| `google_ads_generate_keyword_ideas` | Discover Keyword Planner ideas from up to 20 seed keywords, a URL, keywords plus URL, or a whole site. |
+| `google_ads_generate_keyword_forecast_metrics` | Forecast impressions, clicks, CTR, CPC, cost, conversions, and CPA for a temporary keyword campaign. |
+| `google_ads_search_fields` | Search Google's live GoogleAdsField catalog. |
+| `google_ads_suggest_geo_targets` | Resolve up to 25 location names or geo target IDs to Google Ads geoTargetConstants. |
+| `google_ads_generate_ad_group_themes` | Organize supplied keywords into existing Google Ads ad groups. |
+| `google_ads_run_readonly_rpc` | Advanced read-only escape hatch for allowlisted Google Ads services outside GAQL: Audience Insights, Reach Planner, benchmarks, creator/trending insights, targeting suggestions, Smart Campaign suggestions, identity verification, invoices, and payments accounts. |
+| `google_ads_get_video_upload` | Read the processing state and YouTube video ID of one Google Ads upload in the selected customer. |
 
-### Structure and settings
+</details>
+
+<details>
+<summary><b>10 write tools</b></summary>
+
+Disabled by default. Calls preview unless explicitly confirmed. Check the configuration and exact schema before use.
+
 | Tool | Purpose |
-|---|---|
-| `google_ads_get_campaigns` / `google_ads_get_adgroups` | List entities and their settings |
-| `google_ads_get_budgets` / `google_ads_get_bidding_strategies` | Budgets and bidding configuration |
-| `google_ads_get_conversion_actions` | Conversion actions and their settings |
-| `google_ads_get_change_events` | Change history: who changed what, and when |
-
-### Performance
-| Tool | Purpose |
-|---|---|
-| `google_ads_get_insights` | The main reporting tool. Named metrics, no GAQL required |
-| `google_ads_validate_query` | Check a metric and dimension combination *before* running it |
-| `google_ads_get_keyword_performance` / `google_ads_get_search_terms` | Keyword and query performance |
-| `google_ads_get_landing_pages` | Landing page performance |
-| `google_ads_get_paid_organic_search_terms` | Paid and organic side by side |
-| `google_ads_get_simulations` | Bid and budget simulations |
-| `google_ads_get_recommendations` | Google's own recommendations for the account |
-
-### Performance Max and Shopping
-| Tool | Purpose |
-|---|---|
-| `google_ads_get_pmax_assets` / `google_ads_get_pmax_asset_diagnostics` | Asset groups, assets and their issues |
-| `google_ads_get_pmax_placements` | Where Performance Max actually served |
-| `google_ads_get_shopping_performance` / `google_ads_get_shopping_products` | Shopping performance and product data |
-
-### Keyword Planner
-| Tool | Purpose |
-|---|---|
-| `google_ads_generate_keyword_ideas` | Keyword ideas from seeds or a URL |
-| `google_ads_generate_keyword_historical_metrics` | Volumes, competition, trends |
-| `google_ads_generate_keyword_forecast_metrics` | Forecast clicks, cost and conversions |
-| `google_ads_generate_ad_group_themes` | Suggested ad group groupings |
-| `google_ads_suggest_geo_targets` | Resolve place names to geo target constants |
-
-### Escape hatches
-| Tool | Purpose |
-|---|---|
-| `google_ads_run_gaql` | Run a raw read-only GAQL SELECT |
-| `google_ads_run_readonly_rpc` | Call an allowlisted non-GAQL read service: Reach Planner, audience insights, benchmarks |
-| `google_ads_search_fields` | Search the API field schema |
-
-These exist so a new field or service doesn't require a new release. Only read-only
-statements and an allowlist of services are accepted.
+| --- | --- |
+| `google_ads_upload_video` | Upload MP4/WebM/QuickTime bytes (max 16 MiB) to the Google-managed YouTube channel for the selected ad account. |
+| `google_ads_remove_video_upload` | Remove a video upload owned by the selected ad account. |
+| `google_ads_apply_plan` | Preview, validate and atomically apply a Google Ads v25 build/change plan: campaigns, budgets, ad groups, RSA/Display/Demand Gen ads, image/text/YouTube assets, PMax asset groups and links, keywords, geographic/language targeting listing groups and conversion action configuration (no conversion event uploads). |
+| `google_ads_update_campaign_status` | Pause, re-enable or remove a Google Ads campaign. |
+| `google_ads_create_campaign` | Create a Google Ads campaign. |
+| `google_ads_update_campaign_budget` | Change the daily budget of a Google Ads campaign. |
+| `google_ads_rename_campaign` | Rename a Google Ads campaign. |
+| `google_ads_update_campaign_schedule` | Change the start or end date of a Google Ads campaign. |
+| `google_ads_update_adgroup_status` | Pause, re-enable or remove a Google Ads ad group. |
+| `google_ads_update_adgroup_bid` | Change the default CPC bid of a Google Ads ad group. |
 
 </details>
 
@@ -331,7 +350,7 @@ Full policy and reporting instructions: [SECURITY.md](SECURITY.md).
 ## Looking for a managed, multi-platform version?
 
 [Try hosted Google Ads](https://www.getmcpads.com/tools/google-ads?utm_source=github&utm_medium=readme&utm_campaign=google_ads_hosted) if you want to use this source without operating a local server.
-Get MCP Ads also connects advertising, Search Console and GA4 through one MCP URL.
+getmcpads also connects advertising, Search Console and GA4 through one MCP URL.
 Source availability and plan limits are listed on the site; connecting an account is still required.
 
 1. Follow the [Google Ads connection guide](https://www.getmcpads.com/guides/sources/google-ads).
@@ -360,31 +379,14 @@ Google, Google Ads and the Google Ads API are trademarks of Google LLC.
 **This project is not affiliated with, endorsed by, or sponsored by Google LLC.**
 It is an independent client of a public API.
 
-## Version 1.1: platform updates and MCP contracts
+## MCP contracts and desktop bundle
 
-Every tool now declares read/write annotations, parameter descriptions and a structured output schema. Successful calls retain their original text and expose the same payload as `structuredContent.result`; provider fields depend on the selected report. Errors retain `isError: true`. The generated [server card](server-card.json) contains definitions only, with no account credentials.
+Every tool declares read/write annotations, parameter descriptions and a structured output schema. Successful calls expose the payload as `structuredContent.result`; errors retain `isError: true`. The generated [server card](server-card.json) contains definitions only.
 
-Writes remain disabled unless the platform-specific `ENABLE_WRITES` setting is enabled. Read the exact tool schema before calling: operations can require the owning account, currency, native configuration or a matching preview hash. Calls preview by default; applying a change requires `confirm: true`. A provider timeout can leave the outcome unknown: reconcile the account before retrying a creation or upload.
+Run `npm run bundle -- /path/to/output` to build a `.mcpb` desktop bundle from the current catalog. Credentials are entered locally during installation. Write tools remain disabled unless explicitly enabled.
 
-Additional tools included in this release:
+## More from getmcpads
 
-| Tool | Purpose |
-| --- | --- |
-| `google_ads_list_image_assets` | List the account's image asset library (FROM asset) with stable, publicly served full-size URLs on tpc.googlesyndication.com, dimensions, file size, and mime type. |
-| `google_ads_list_video_assets` | List the account's YouTube video assets (FROM asset) with derived watch, embed, and public thumbnail URLs. |
-| `google_ads_get_demand_gen_assets` | List Demand Gen ads (video responsive, multi-asset, carousel) with their referenced creatives resolved: stable image URLs and YouTube video IDs with embed and thumbnail URLs. |
-| `google_ads_upload_video` | Upload MP4/WebM/QuickTime bytes (max 16 MiB) to the Google-managed YouTube channel for the selected ad account. |
-| `google_ads_remove_video_upload` | Remove a video upload owned by the selected ad account. |
-| `google_ads_apply_plan` | Preview, validate and atomically apply a Google Ads v25 build/change plan: campaigns, budgets, ad groups, RSA/Display/Demand Gen ads, image/text/YouTube assets, PMax asset groups and links, keywords, geographic/language targeting listing groups and conversion action configuration (no conversion event uploads). |
+[Meta Ads](https://github.com/getmcpads-com/meta-ads-mcp-server) · [Google Analytics 4](https://github.com/getmcpads-com/google-analytics-mcp-server) · [Google Search Console](https://github.com/getmcpads-com/google-search-console-mcp-server) · [TikTok Ads](https://github.com/getmcpads-com/tiktok-ads-mcp-server) · [Pinterest Ads](https://github.com/getmcpads-com/pinterest-ads-mcp-server) · [X Ads](https://github.com/getmcpads-com/x-ads-mcp-server)
 
-The hosted GetMCPAds service additionally provides OAuth account selection and interactive review workspaces. Local servers use your own platform credentials and return native report data and media references.
-
-### Desktop bundle
-
-Run `npm run bundle -- /path/to/output` to build a `.mcpb` desktop bundle from the current catalogue. The bundle contains production dependencies, documented local configuration, and complete tool definitions. Provider credentials are entered locally during installation; write tools remain disabled unless explicitly enabled.
-
-## Additional native tools
-
-| Tool | Purpose |
-|---|---|
-| `google_ads_get_video_upload` | Read the processing state and YouTube video ID of one Google Ads upload in the selected customer. |
+Maintained by **Emmanuel** at [getmcpads](https://www.getmcpads.com). Questions: [hello@getmcpads.com](mailto:hello@getmcpads.com).
