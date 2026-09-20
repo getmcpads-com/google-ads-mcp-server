@@ -51,6 +51,7 @@ const GOOGLE_ADS_TOOL_MANIFEST = {
     { name: "google_ads_list_image_assets", purpose: "List the account's image asset library with stable public full-size URLs, dimensions, and file metadata." },
     { name: "google_ads_list_video_assets", purpose: "List YouTube video assets with derived watch, embed, and public thumbnail URLs." },
     { name: "google_ads_get_demand_gen_assets", purpose: "List Demand Gen ads with their referenced image and YouTube creatives resolved." },
+    {"name": "google_ads_get_video_upload", "purpose": "Read the processing state and YouTube video ID of one Google Ads upload in the selected customer"},
   ],
   resources: [
     "google-ads://manifest",

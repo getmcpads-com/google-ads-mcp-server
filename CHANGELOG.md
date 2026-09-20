@@ -1,4 +1,13 @@
 # Changelog
+## 2.0.0 - 2026-09-20
+
+- Add descending image/video asset pagination.
+- Add account-scoped upload processing reads and return the native upload ID.
+- Retain API v25, standalone MCC discovery and credential redirect protection.
+- Require Node.js 22.12 or newer and check Node 22/24 in CI.
+- Update vulnerable dependencies and regenerate the MCP catalog.
+- No hosted creative UI or MCP Apps integrations.
+
 
 ## 1.1.0
 

@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.getmcpads/google-ads",
   "title": "Google Ads",
-  "description": "Google Ads: 34 read tools and 10 opt-in writes with previews and confirmation.",
-  "version": "1.1.0",
+  "description": "Google Ads MCP server: 35 read tools, 10 opt-in preview-first writes.",
+  "version": "2.0.0",
   "websiteUrl": "https://www.getmcpads.com/tools/google-ads",
   "repository": {
     "url": "https://github.com/getmcpads-com/google-ads-mcp-server",
@@ -14,7 +14,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@getmcpads/google-ads-mcp-server",
-      "version": "1.1.0",
+      "version": "2.0.0",
       "transport": {
         "type": "stdio"
       },

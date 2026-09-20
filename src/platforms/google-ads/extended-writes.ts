@@ -192,6 +192,23 @@ export function normalizeGooglePlan(customerId: string, input: unknown[]) {
   });
 }
 
+/** Account-scoped polling for an upload; safe to repeat without uploading again. */
+export function registerGoogleVideoReads(c: Collector, config: Record<string, string>) {
+  c.tool("google_ads_get_video_upload", "Read the processing state and YouTube video ID of one Google Ads upload in the selected customer. Use only the returned videoId after state=PROCESSED. This is a read; it does not upload again.", {
+    customerId: z.string().regex(/^[\d-]+$/), currency: z.string().regex(/^[A-Z]{3}$/).describe("Actual customer currency, verified before reading the upload."),
+    uploadId: z.string().regex(/^\d+$/).describe("Numeric upload ID returned by google_ads_upload_video."),
+    loginCustomerId: z.string().regex(/^[\d-]+$/).optional().describe("Optional MCC manager ID; defaults to the configured manager."), testAccountOnly: z.boolean().optional().describe("Require customer.test_account=true; enable for sandbox checks."),
+  }, async raw => {
+    const a = z.object({ customerId: z.string().regex(/^[\d-]+$/), currency: z.string().regex(/^[A-Z]{3}$/), uploadId: z.string().regex(/^\d+$/), loginCustomerId: z.string().regex(/^[\d-]+$/).optional(), testAccountOnly: z.boolean().optional() }).strict().parse(raw);
+    const cid = a.customerId.replace(/-/g, "");
+    const { api } = await googleSession(config, cid, a.currency, a.testAccountOnly === true, (a.loginCustomerId ?? config.loginCustomerId)?.replace(/-/g, ""));
+    const resourceName = `customers/${cid}/youTubeVideoUploads/${a.uploadId}`;
+    const response = await api("googleAds:search", { query: `SELECT you_tube_video_upload.resource_name, you_tube_video_upload.state, you_tube_video_upload.video_id FROM you_tube_video_upload WHERE you_tube_video_upload.resource_name = '${resourceName}' LIMIT 1` });
+    const video = response.results?.[0]?.youTubeVideoUpload;
+    return result({ uploadId: a.uploadId, state: video?.state ?? "NOT_FOUND", ...(video?.state === "PROCESSED" && video.videoId ? { videoId: video.videoId } : {}) });
+  });
+}
+
 export function registerGoogleExtendedWrites(
   c: Collector,
   config: Record<string, string>,
@@ -542,6 +559,7 @@ function registerGoogleVideoWrites(
         applied: true,
         planHash,
         resourceName: response.resourceName,
+        uploadId: String(response.resourceName).split("/").pop(),
         visibility: "UNLISTED",
         nextAction:
           "Query you_tube_video_upload.state and video_id; wait for PROCESSED before creating the video asset.",
